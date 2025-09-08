@@ -41,7 +41,7 @@
 *.su
 *.idb
 *.pdb
-
+*.maq
 # Kernel Module Compile Results
 *.mod*
 *.cmd
@@ -56,3 +56,6 @@ dkms.conf
 
 # debug information files
 *.dwo
+Trabalhos/t2/Codigo/log_da_console
+Trabalhos/t2/Codigo/main
+Trabalhos/t2/Codigo/montador
