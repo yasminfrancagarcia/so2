@@ -13,6 +13,7 @@
 #include "irq.h"
 #include "memoria.h"
 #include "programa.h"
+#include "processo.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -25,6 +26,9 @@
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 
+//constantes de processos
+#define MAX_PROCESSES 4
+#define NO_PROCESS -1
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -34,6 +38,8 @@ struct so_t {
 
   int regA, regX, regPC, regERRO; // cópia do estado da CPU
   // t2: tabela de processos, processo corrente, pendências, etc
+  pcb* tabela_de_processos[MAX_PROCESSES];
+  int processo_corrente; // índice na tabela de processos
 };
 
 
@@ -61,6 +67,8 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console)
   self->es = es;
   self->console = console;
   self->erro_interno = false;
+  //processos
+  self->processo_corrente = NO_PROCESS;
 
   // quando a CPU executar uma instrução CHAMAC, deve chamar a função
   //   so_trata_interrupcao, com primeiro argumento um ptr para o SO
@@ -83,7 +91,7 @@ void so_destroi(so_t *self)
 // funções auxiliares para o tratamento de interrupção
 static void so_salva_estado_da_cpu(so_t *self);
 static void so_trata_irq(so_t *self, int irq);
-static void so_trata_pendencias(so_t *self);
+static void so_trata_pendencias(so_t *self);err_t err;
 static void so_escalona(so_t *self);
 static int so_despacha(so_t *self);
 
@@ -119,6 +127,7 @@ static int so_trata_interrupcao(void *argC, int reg_A)
   return so_despacha(self);
 }
 
+//salva o valor antigo da cpu? antes do processo? nao entendi
 static void so_salva_estado_da_cpu(so_t *self)
 {
   // t2: salva os registradores que compõem o estado da cpu no descritor do
@@ -132,6 +141,15 @@ static void so_salva_estado_da_cpu(so_t *self)
       || mem_le(self->mem, 59, &self->regX)) {
     console_printf("SO: erro na leitura dos registradores");
     self->erro_interno = true;
+  }
+  //se tiver algum processo corrente, salva o estado dele
+  if(self->processo_corrente != NO_PROCESS){
+    cpu_ctx contexto;
+    contexto.pc = self->regPC;
+    contexto.regA = self->regA;
+    contexto.regX = self->regX;
+    contexto.erro = self->regERRO;
+    self->tabela_de_processos[self->processo_corrente]->ctx_cpu = contexto;
   }
 }
 
@@ -154,6 +172,7 @@ static void so_escalona(so_t *self)
   //   depois, implementa um escalonador melhor
 }
 
+// coloca o estado do processo corrente na CPU, para que ela execute?
 static int so_despacha(so_t *self)
 {
   // t2: se houver processo corrente, coloca o estado desse processo onde ele
@@ -168,6 +187,13 @@ static int so_despacha(so_t *self)
     console_printf("SO: erro na escrita dos registradores");
     self->erro_interno = true;
   }
+
+  cpu_ctx contexto = self->tabela_de_processos[self->processo_corrente]->ctx_cpu;
+  mem_escreve(self->mem, CPU_END_PC, contexto.pc);
+  mem_escreve(self->mem, CPU_END_A, contexto.regA);
+  mem_escreve(self->mem, 59, contexto.regX);
+  mem_escreve(self->mem, CPU_END_erro, contexto.erro); 
+
   if (self->erro_interno) return 1;
   else return 0;
 }
@@ -238,6 +264,13 @@ static void so_trata_reset(so_t *self)
   //   em bios.asm (que é onde está a instrução CHAMAC que causou a execução
   //   deste código
 
+  ///processos
+   //inicializa a tabela de processos 
+  // tabela_de_processos já é um array fixo, não precisa de malloc
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    self->tabela_de_processos[i] = NULL;
+  }
+
   // coloca o programa init na memória
   ender = so_carrega_programa(self, "init.maq");
   if (ender != 100) {
@@ -246,8 +279,19 @@ static void so_trata_reset(so_t *self)
     return;
   }
 
+  //coloca o endereço do programa init np primeiro processo
+  pcb* processo_inicial = criar_processo(ender, D_TERM_A_TECLADO, D_TERM_A_TELA);
+  self->tabela_de_processos[0] = processo_inicial;
+  self->processo_corrente = 0;
+
   // altera o PC para o endereço de carga
-  self->regPC = ender; // deveria ser no processo
+  //self->regPC = ender; // deveria ser no processo
+  processo_inicial->ctx_cpu.pc = ender;
+
+  self->regPC = processo_inicial->ctx_cpu.pc;
+  
+  processo_inicial->estado = P_EXECUTANDO;
+
 }
 
 // interrupção gerada quando a CPU identifica um erro
@@ -414,6 +458,10 @@ static void so_chamada_cria_proc(so_t *self)
   // ainda sem suporte a processos, carrega programa e passa a executar ele
   // quem chamou o sistema não vai mais ser executado, coitado!
   // t2: deveria criar um novo processo
+
+  //aponta para o processo corrente na tabela de processos? 
+  pcb* novo_processo = NULL;
+  int nome_arquivo = novo_processo->ctx_cpu.regX;
 
   // em X está o endereço onde está o nome do arquivo
   int ender_proc;
