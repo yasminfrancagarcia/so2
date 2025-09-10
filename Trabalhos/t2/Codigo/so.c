@@ -460,8 +460,8 @@ static void so_chamada_cria_proc(so_t *self)
   // t2: deveria criar um novo processo
 
   //aponta para o processo corrente na tabela de processos? 
-  pcb* novo_processo = NULL;
-  int nome_arquivo = novo_processo->ctx_cpu.regX;
+  //pcb* novo_processo = NULL;
+  //int nome_arquivo = novo_processo->ctx_cpu.regX;
 
   // em X está o endereço onde está o nome do arquivo
   int ender_proc;
