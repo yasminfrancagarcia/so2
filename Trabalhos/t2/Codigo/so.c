@@ -462,25 +462,55 @@ static void so_chamada_cria_proc(so_t *self)
 
   //aponta para o processo corrente na tabela de processos
   //pega o processo corrente para ler o X e pegar o nome do arquivo 
-  pcb* novo_processo = self->tabela_de_processos[self->processo_corrente];
-  int nome_arquivo = novo_processo->ctx_cpu.regX;
+  pcb* processo_corrente = self->tabela_de_processos[self->processo_corrente];
+  int nome_arquivo = processo_corrente->ctx_cpu.regX;
 
   // em X está o endereço onde está o nome do arquivo
   //int ender_proc;
+
+  //achar uma posição vazia na tabela de processos, para colocar o processo novo
+  int possivel_indice = -1;
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    if (self->tabela_de_processos[i] == NULL) {
+      possivel_indice = i;
+      break;
+    }
+  }
+  if (possivel_indice == -1) {
+    //não tem mais espaço na tabela de processos
+    console_printf("sem espaço na tabela de processos");
+    self->regA = -1; //erro
+    return;
+  }
   // t2: deveria ler o X do descritor do processo criador
   //ender_proc = self->regX;
   char nome[100];
   if (copia_str_da_mem(100, nome, self->mem, nome_arquivo)) {
     int ender_carga = so_carrega_programa(self, nome);
-    if (ender_carga > 0) {
-      // t2: deveria escrever no PC do descritor do processo criado
-      self->regPC = ender_carga;
+    //logica contraria
+    if (ender_carga < 0) { //erro na carga
+      console_printf("SO: problema na carga do programa '%s'", nome);
+      self->regA = -1; //erro
       return;
-    } // else?
+      // t2: deveria escrever no PC do descritor do processo criado
+      //self->regPC = ender_carga;
+    }
+    //cria o processo
+    //endereço de carga, entrada e saída
+    pcb* novo_processo = criar_processo(ender_carga, D_TERM_A_TECLADO, D_TERM_A_TELA);
+    self->tabela_de_processos[possivel_indice] = novo_processo;//colocar o processo na tabela
+    novo_processo->estado = P_PRONTO;
+    // t2: deveria escrever no PC do descritor do processo criado
+      //self->regPC = ender_carga;
+    novo_processo->ctx_cpu.pc = ender_carga;
+    //escrever o PID do processo criado no reg A do processo que pediu a criação
+    processo_corrente->ctx_cpu.regA = novo_processo->pid;
+    return;
+
   }
   // deveria escrever -1 (se erro) ou o PID do processo criado (se OK) no reg A
   //   do processo que pediu a criação
-  self->regA = -1;
+ // self->regA = -1;
 }
 
 // implementação da chamada se sistema SO_MATA_PROC
@@ -517,6 +547,7 @@ static void so_chamada_mata_proc(so_t *self)
 
 // implementação da chamada se sistema SO_ESPERA_PROC
 // espera o fim do processo com pid X
+//bloqueia o processo corrente(init) se o processo com pid X não tiver terminado
 static void so_chamada_espera_proc(so_t *self)
 {
   // t2: deveria bloquear o processo se for o caso (e desbloquear na morte do esperado)
