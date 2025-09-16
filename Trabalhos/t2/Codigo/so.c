@@ -344,6 +344,7 @@ static void so_chamada_escr(so_t *self);
 static void so_chamada_cria_proc(so_t *self);
 static void so_chamada_mata_proc(so_t *self);
 static void so_chamada_espera_proc(so_t *self);
+static pcb *achar_processo(so_t *self, int pid);
 
 static void so_trata_irq_chamada_sistema(so_t *self)
 {
@@ -459,16 +460,17 @@ static void so_chamada_cria_proc(so_t *self)
   // quem chamou o sistema não vai mais ser executado, coitado!
   // t2: deveria criar um novo processo
 
-  //aponta para o processo corrente na tabela de processos? 
-  //pcb* novo_processo = NULL;
-  //int nome_arquivo = novo_processo->ctx_cpu.regX;
+  //aponta para o processo corrente na tabela de processos
+  //pega o processo corrente para ler o X e pegar o nome do arquivo 
+  pcb* novo_processo = self->tabela_de_processos[self->processo_corrente];
+  int nome_arquivo = novo_processo->ctx_cpu.regX;
 
   // em X está o endereço onde está o nome do arquivo
-  int ender_proc;
+  //int ender_proc;
   // t2: deveria ler o X do descritor do processo criador
-  ender_proc = self->regX;
+  //ender_proc = self->regX;
   char nome[100];
-  if (copia_str_da_mem(100, nome, self->mem, ender_proc)) {
+  if (copia_str_da_mem(100, nome, self->mem, nome_arquivo)) {
     int ender_carga = so_carrega_programa(self, nome);
     if (ender_carga > 0) {
       // t2: deveria escrever no PC do descritor do processo criado
@@ -486,9 +488,31 @@ static void so_chamada_cria_proc(so_t *self)
 static void so_chamada_mata_proc(so_t *self)
 {
   // t2: deveria matar um processo
-  // ainda sem suporte a processos, retorna erro -1
-  console_printf("SO: SO_MATA_PROC não implementada");
-  self->regA = -1;
+  //matar o processo corrente
+  pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+  int pid_a_matar = proc_corrente->ctx_cpu.regX;
+  //matar a si mesmo
+  if(pid_a_matar == 0){
+    proc_corrente->usando = 0;
+    proc_corrente->estado = P_TERMINOU;
+    self->processo_corrente = NO_PROCESS; //nenhum processo está executando
+    self->regA = 0; //sucesso
+    return;
+  }
+
+  pcb *proc = achar_processo(self, pid_a_matar);
+  if(proc != NULL){
+    proc->usando = 0;
+    proc->estado = P_TERMINOU;
+    proc_corrente->ctx_cpu.regA = 0; //sucesso
+  }else{
+    //não encontrou na tbela de processos
+    proc_corrente->estado = P_TERMINOU;
+    //processo_a_matar->ctx_cpu.regA = -1; //erro
+  }
+
+  //console_printf("SO: SO_MATA_PROC não implementada");
+  //self->regA = -1;
 }
 
 // implementação da chamada se sistema SO_ESPERA_PROC
@@ -496,9 +520,27 @@ static void so_chamada_mata_proc(so_t *self)
 static void so_chamada_espera_proc(so_t *self)
 {
   // t2: deveria bloquear o processo se for o caso (e desbloquear na morte do esperado)
-  // ainda sem suporte a processos, retorna erro -1
-  console_printf("SO: SO_ESPERA_PROC não implementada");
-  self->regA = -1;
+  //bloquei o processo corrente
+  pcb *processo_corrente = self->tabela_de_processos[self->processo_corrente];
+  //processo q esta sendo esperado pelo processo corrente, deve morrer
+  pcb *processo_sendo_esperado = achar_processo(self, processo_corrente->ctx_cpu.regX);
+  if(processo_sendo_esperado && processo_sendo_esperado->pid != processo_corrente->pid){
+    if(processo_sendo_esperado->estado != P_TERMINOU){
+      processo_corrente->estado = P_BLOQUEADO;
+      self->processo_corrente = NO_PROCESS; //nenhum processo está executando
+      return;
+    }else{
+      //se o processo ja terminou, retorna sucesso
+      processo_corrente->ctx_cpu.regA = 0;
+      return;
+    }
+  }else{
+    //não encontrou na tabela de processos
+    processo_corrente->estado = P_TERMINOU;
+  }
+
+  /* console_printf("SO: SO_ESPERA_PROC não implementada");
+  self->regA = -1; */
 }
 
 
@@ -558,6 +600,15 @@ static bool copia_str_da_mem(int tam, char str[tam], mem_t *mem, int ender)
   }
   // estourou o tamanho de str
   return false;
+}
+
+pcb *achar_processo(so_t *self, int pid) {
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->pid == pid) {
+      return self->tabela_de_processos[i];
+    }
+  }
+  return NULL;
 }
 
 // vim: foldmethod=marker
