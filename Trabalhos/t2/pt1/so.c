@@ -103,7 +103,7 @@ static void so_trata_irq(so_t *self, int irq);
 static void so_trata_pendencias(so_t *self);err_t err;
 static void so_escalona(so_t *self);
 static int so_despacha(so_t *self);
-
+static void libera_terminal(so_t *self, int pid);
 // função a ser chamada pela CPU quando executa a instrução CHAMAC, no tratador de
 //   interrupção em assembly
 // essa é a única forma de entrada no SO depois da inicialização
@@ -180,11 +180,22 @@ static void so_escalona(so_t *self)
   //   corrente não possa continuar executando, senão deixa o mesmo processo.
   //   depois, implementa um escalonador melhor
 
+    // limpa processos terminados
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    if (self->tabela_de_processos[i] != NULL &&
+      self->tabela_de_processos[i]->estado == P_TERMINOU) {
+      libera_terminal(self, self->tabela_de_processos[i]->pid);
+      free(self->tabela_de_processos[i]);
+      self->tabela_de_processos[i] = NULL;
+    }
+  }
   //verifica se o processo corrente pode continuar executando
-  if(self->processo_corrente == P_EXECUTANDO){
-    //pode continuar executando
+  if(self->processo_corrente != NO_PROCESS &&
+   self->tabela_de_processos[self->processo_corrente]->estado == P_EXECUTANDO) {
+    // processo atual ainda está executando
     return;
   }
+
   //procura um processo pronto para executar
   for(int i = 0; i < MAX_PROCESSES; i++){
     if(self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->estado == P_PRONTO){
@@ -193,6 +204,7 @@ static void so_escalona(so_t *self)
       self->tabela_de_processos[i]->estado = P_EXECUTANDO;
       return;
     }
+    
   }
 }
 
@@ -238,6 +250,7 @@ static void so_trata_irq_chamada_sistema(so_t *self);
 static void so_trata_irq_err_cpu(so_t *self);
 static void so_trata_irq_relogio(so_t *self);
 static void so_trata_irq_desconhecida(so_t *self, int irq);
+
 
 static void so_trata_irq(so_t *self, int irq)
 {
@@ -335,8 +348,20 @@ static void so_trata_irq_err_cpu(so_t *self)
   // t2: com suporte a processos, deveria pegar o valor do registrador erro
   //   no descritor do processo corrente, e reagir de acordo com esse erro
   //   (em geral, matando o processo)
-  err_t err = self->regERRO;
-  console_printf("SO: IRQ não tratada -- erro na CPU: %s", err_nome(err));
+   // T1: Obtém código do erro do descritor e mata o processo corrente.
+  if(self->processo_corrente != NO_PROCESS){
+    pcb* proc = self->tabela_de_processos[self->processo_corrente];
+    err_t erro = proc->ctx_cpu.erro;
+    console_printf("SO: erro na CPU do processo %d: %s", proc->pid, err_nome(erro));
+    proc->usando = 0;
+    proc->estado = P_TERMINOU;
+    self->processo_corrente = NO_PROCESS; //nenhum processo está executando
+    libera_terminal(self, proc->pid); //libera o terminal usado pelo processo
+
+    return;
+  }
+  //err_t err = self->regERRO;
+  console_printf("SO: IRQ TRATADA -- erro na CPU: %s", err_nome(err));
   self->erro_interno = true;
 }
 
@@ -461,8 +486,8 @@ static void so_chamada_escr(so_t *self)
   // implementação escrevendo direto do terminal A
   //   t2: deveria usar o dispositivo de saída corrente do processo
   pcb *proc = self->tabela_de_processos[self->processo_corrente];
-    dispositivo_id_t saida = proc->saida;        // Ex: D_TERM_B_TELA
-    dispositivo_id_t saida_ok = saida + 1;       // Ex: D_TERM_B_TELA_OK
+  dispositivo_id_t saida = proc->saida;        // Ex: D_TERM_B_TELA
+  dispositivo_id_t saida_ok = saida + 1;       // Ex: D_TERM_B_TELA_OK
 
   for (;;) {
     int estado;
@@ -597,35 +622,52 @@ static void so_chamada_cria_proc(so_t *self)
 // mata o processo com pid X (ou o processo corrente se X é 0)
 static void so_chamada_mata_proc(so_t *self)
 {
-  // t2: deveria matar um processo
-  //matar o processo corrente
-  pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
-  int pid_a_matar = proc_corrente->ctx_cpu.regX;
-  //matar a si mesmo
-  if(pid_a_matar == 0){
-    proc_corrente->usando = 0;
-    proc_corrente->estado = P_TERMINOU;
-    self->processo_corrente = NO_PROCESS; //nenhum processo está executando
-    self->regA = 0; //sucesso
-    return;
-  }
+    pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+    int pid_a_matar = proc_corrente->ctx_cpu.regX;
 
-  pcb *proc = achar_processo(self, pid_a_matar);
-  if(proc != NULL){
-    proc->usando = 0;
-    proc->estado = P_TERMINOU;
-    proc_corrente->ctx_cpu.regA = 0; //sucesso
-    libera_terminal(self, pid_a_matar); //libera o terminal usado por esse processo
-    return;
-  }else{
-    //não encontrou na tbela de processos
-    proc_corrente->estado = P_TERMINOU;
-    //processo_a_matar->ctx_cpu.regA = -1; //erro
-  }
+    pcb *proc_alvo;
+
+    if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid) {
+        // mata a si mesmo
+        proc_alvo = proc_corrente;
+    } else {
+        // mata outro processo
+        proc_alvo = achar_processo(self, pid_a_matar);
+    }
+
+    if (proc_alvo == NULL) {
+        proc_corrente->ctx_cpu.regA = -1; // erro: PID não encontrado
+        return;
+    }
+
+    // marca como terminado
+    proc_alvo->estado = P_TERMINOU;
+    proc_alvo->usando = 0;
+
+    // libera terminal
+    libera_terminal(self, proc_alvo->pid);
+
+    // remove da tabela
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (self->tabela_de_processos[i] == proc_alvo) {
+            free(proc_alvo);
+            self->tabela_de_processos[i] = NULL;
+            break;
+        }
+    }
+
+    // se matou a si mesmo, não há processo corrente
+    if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid) {
+        self->processo_corrente = NO_PROCESS;
+    }
+
+    proc_corrente->ctx_cpu.regA = 0; // sucesso
+}
+
 
   //console_printf("SO: SO_MATA_PROC não implementada");
   //self->regA = -1;
-}
+
 
 // implementação da chamada se sistema SO_ESPERA_PROC
 // espera o fim do processo com pid X
