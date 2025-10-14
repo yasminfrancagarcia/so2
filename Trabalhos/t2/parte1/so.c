@@ -615,7 +615,7 @@ static void so_chamada_cria_proc(so_t *self)
   }
   // deveria escrever -1 (se erro) ou o PID do processo criado (se OK) no reg A
   //   do processo que pediu a criação
- // self->regA = -1;
+ // self->regA = -1;A
 }
 
 // implementação da chamada se sistema SO_MATA_PROC
