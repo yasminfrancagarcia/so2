@@ -1,0 +1,12 @@
+./montador -e 0     bios.asm       > bios.maq
+./montador -e 60    trata_int.asm  > trata_int.maq
+./montador -e 100   init.asm       > init.maq
+./montador -e 1000  ex1.asm        > ex1.maq
+./montador -e 2000  ex2.asm        > ex2.maq
+./montador -e 3000  ex3.asm        > ex3.maq
+./montador -e 4000  ex4.asm        > ex4.maq
+./montador -e 5000  ex5.asm        > ex5.maq
+./montador -e 6000  ex6.asm        > ex6.maq
+./montador -e 7000  p1.asm         > p1.maq
+./montador -e 8000  p2.asm         > p2.maq
+./montador -e 9000  p3.asm         > p3.maq
