@@ -27,6 +27,9 @@ typedef struct {
     cpu_ctx ctx_cpu;         // registradores salvos
     dispositivo_id_t entrada;
     dispositivo_id_t saida;
+
+    int dispositivo_bloqueado; // dispositivo que causou o bloqueio (se houver)
+    int pid_esperando;       // PID do processo que está esperando este (se houver)
 } pcb;
 
 
