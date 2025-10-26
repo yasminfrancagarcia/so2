@@ -1,4 +1,4 @@
-// so.c
+//tenho esse arquivo so.c, que a a base de um sistema operacional experimental dado pelo professor. Consegue me dizer pq ele nao entra no programa init para iniciar ? // so.c
 // sistema operacional
 // simulador de computador
 // so25b
@@ -162,126 +162,25 @@ static void so_salva_estado_da_cpu(so_t *self)
   }
 }
 
-/* static void so_trata_pendencias(so_t *self)
-{// t2: realiza ações que não são diretamente ligadas com a interrupção que
-  //   está sendo atendida:
-  // - E/S pendente
-  // - desbloqueio de processos
-  // - contabilidades
-  // - etc
-  //na função que trata de pendências, o SO deve verificar o estado dos dispositivos
-   //que causaram bloqueio e realizar operações pendentes e desbloquear processos se for o caso
-  //ver os dispsitivos que podem estar bloqueados
-  for(int i =0; i<MAX_PROCESSES; i++){
-    pcb* proc = self->tabela_de_processos[i];
-    if (proc == NULL) continue; // evita acessar ponteiro nulo
-    if(proc->estado == P_BLOQUEADO){
-      dispositivo_id_t disp = proc->dispositivo_bloqueado;
-      int estado;
-      //verifica se o dispositivo já está pronto
-      if(es_le(self->es, disp + 1, &estado) != ERR_OK){
-        console_printf("SO: problema no acesso ao estado do dispositivo");
-        self->erro_interno = true;
-        return;
-      }
-      if(estado != 0){ //dispositivo pronto
-        //realiza a operação pendente
-        if(disp % 2 == 0){ //dispositivo de leitura
-          int dado;
-          if(es_le(self->es, disp, &dado) != ERR_OK){
-            console_printf("SO: problema no acesso ao dispositivo");
-            self->erro_interno = true;
-            return;
-          }
-          //coloca o dado no reg A do processo
-          proc->ctx_cpu.regA = dado;
-        } else { //dispositivo de escrita
-          int dado = proc->ctx_cpu.regX;
-          if(es_escreve(self->es, disp, dado) != ERR_OK){
-            console_printf("SO: problema no acesso ao dispositivo");
-            self->erro_interno = true;
-            return;
-          }
-          proc->ctx_cpu.regA = 0; //sucesso
-        }
-        //desbloqueia o processo
-        proc->estado = P_PRONTO;
-        proc->dispositivo_bloqueado = -1;
-      }
-    }
-  }
-
-
-}
- */
-
-/* static void so_trata_pendencias(so_t *self)
-{// t2: realiza ações que não são diretamente ligadas com a interrupção que
-  //   está sendo atendida:
-  // - E/S pendente
-  // - desbloqueio de processos
-  // - contabilidades
-  // - etc
-  //na função que trata de pendências, o SO deve verificar o estado dos dispositivos
-   //que causaram bloqueio e realizar operações pendentes e desbloquear processos se for o caso
-  //ver os dispsitivos que podem estar bloqueados
-  for(int i =0; i<MAX_PROCESSES; i++){
-    pcb* proc = self->tabela_de_processos[i];
-    if (proc == NULL) continue;
-    if(proc->estado == P_BLOQUEADO){
-        //verifica o dispositivo que causou o bloqueio
-        int dispositivo = proc->dispositivo_bloqueado;
-        int op = dispositivo % 4; //0 = leitura, 1 = escrita
-        //verifica se o dispositivo já está disponível
-        int disponivel;
-        int estado = es_le(self->es, dispositivo , &disponivel);
-        if(estado != ERR_OK){
-            
-            //realiza operação pendente
-            if(op == TERM_TECLADO){ //leitura
-                int dado;
-                if(es_le(self->es, dispositivo-1, &dado) != ERR_OK){
-                    console_printf("SO: problema no acesso ao dispositivo de leitura");
-                    self->erro_interno = true;
-                    return;
-                }
-                //coloca o dado no regA do processo
-                proc->ctx_cpu.regA = dado;
-            } else if(op == TERM_TELA){ //escrita
-                int dado = proc->ctx_cpu.regX;
-                if(es_escreve(self->es, dispositivo-1, dado) != ERR_OK){
-                    console_printf("SO: problema no acesso ao dispositivo de escrita");
-                    self->erro_interno = true;
-                    return;
-                }
-                proc->ctx_cpu.regA = 0; //sucesso
-            }
-        }
-        //desbloqueia o processo
-        proc->estado = P_PRONTO;
-        proc->dispositivo_bloqueado = -1;
-    }
-  }
-  
-
-
-} */
-
 static void so_trata_pendencias(so_t *self)
-{
-  // Itera por todos os processos
+{// t2: realiza ações que não são diretamente ligadas com a interrupção que
+  //   está sendo atendida:
+  // - E/S pendente
+  // - desbloqueio de processos
+  // - contabilidades
+  // - etc
+  //na função que trata de pendências, o SO deve verificar o estado dos dispositivos
+   //que causaram bloqueio e realizar operações pendentes e desbloquear processos se for o caso
+   // ver os dispsitivos que podem estar bloqueados, itera por todos os processos
   for (int i = 0; i < MAX_PROCESSES; i++) {
     pcb* proc = self->tabela_de_processos[i];
-    
-    // Só nos importamos com processos bloqueados por E/S
+    //só importa os processos bloqueados por E/S
     if (proc == NULL || proc->estado != P_BLOQUEADO || proc->dispositivo_bloqueado == -1) {
       continue; 
     }
-
-    // OK, processo [i] está bloqueado em um dispositivo. Vamos checar.
+    //processo [i] está bloqueado em um dispositivo, checar
     dispositivo_id_t disp = proc->dispositivo_bloqueado;
     dispositivo_id_t disp_ok = disp + 1;
-    
     int estado;
     if (es_le(self->es, disp_ok, &estado) != ERR_OK) {
       console_printf("SO: erro ao checar E/S pendente para pid %d", proc->pid);
@@ -290,17 +189,17 @@ static void so_trata_pendencias(so_t *self)
     }
 
     if (estado != 0) {
-      // Dispositivo está PRONTO!
+      //dispositivo está PRONTO
       console_printf("SO: E/S pronta para pid %d (disp %d), desbloqueando.", proc->pid, disp);
       
-      // Realiza a operação pendente
-      if (disp % 2 == 0) { // Dispositivo de LEITURA (teclado)
+      //realiza a operação pendente
+      if (disp % 2 == 0) { //dispositivo de LEITURA (teclado)
         int dado;
         if (es_le(self->es, disp, &dado) != ERR_OK) {
            console_printf("SO: erro ao completar leitura pendente para pid %d", proc->pid);
            proc->ctx_cpu.regA = -1; // Sinaliza erro no processo
         } else {
-           proc->ctx_cpu.regA = dado; // Coloca o dado no regA
+           proc->ctx_cpu.regA = dado; //Coloca o dado no regA
         }
       } else { // Dispositivo de ESCRITA (tela)
         int dado = proc->ctx_cpu.regX; 
@@ -314,10 +213,13 @@ static void so_trata_pendencias(so_t *self)
       
       // Desbloqueia o processo
       proc->estado = P_PRONTO;
-      proc->dispositivo_bloqueado = -1; // Marca que não está mais esperando E/S
+      proc->dispositivo_bloqueado = -1; //marca que não está mais esperando E/S
     }
   }
+
 }
+
+
 static void so_escalona(so_t *self)
 {
   // escolhe o próximo processo a executar, que passa a ser o processo
@@ -454,31 +356,38 @@ static void so_trata_reset(so_t *self)
 
   // coloca o programa init na memória
   ender = so_carrega_programa(self, "init.maq");
+  /* if (ender != 100) {
+    console_printf("SO: problema na carga do programa inicial");
+    self->erro_interno = true;
+    return;
+  }
+ */
   if (ender < 0) { // Verificação de erro melhorada
     console_printf("SO: problema na carga do programa inicial");
     self->erro_interno = true;
     return;
   }
-
   //coloca o endereço do programa init np primeiro processo
   pcb* processo_inicial = criar_processo(ender, D_TERM_A_TECLADO, D_TERM_A_TELA);
   //marcar o terminal usado
   self->terminais_usados[0] = processo_inicial->pid;
   self->tabela_de_processos[0] = processo_inicial;
-  self->processo_corrente = 0;
+  self->processo_corrente = 0; //índice do processo inicial na tabela
 
-  // *** CORREÇÃO IMPORTANTE (Requisito 0) ***
-  // Inicializa o CONTEXTO COMPLETO do processo inicial
+  // altera o PC para o endereço de carga
+  //self->regPC = ender; // deveria ser no processo
   processo_inicial->ctx_cpu.pc = ender;
   processo_inicial->ctx_cpu.regA = 0;   // <-- ESSENCIAL
   processo_inicial->ctx_cpu.regX = 0;   // <-- ESSENCIAL
   processo_inicial->ctx_cpu.erro = 0; // <-- ESSENCIAL
 
+
+  self->regPC = processo_inicial->ctx_cpu.pc;
   // Inicializa campos de bloqueio
   processo_inicial->dispositivo_bloqueado = -1;
   processo_inicial->pid_esperando = -1;
-  
   processo_inicial->estado = P_EXECUTANDO;
+  
 }
 
 // Acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
@@ -503,32 +412,32 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
   }
 }
 // interrupção gerada quando a CPU identifica um erro
-// interrupção gerada quando a CPU identifica um erro
 static void so_trata_irq_err_cpu(so_t *self)
 {
+  // Ocorreu um erro interno na CPU
+  // O erro está codificado em CPU_END_erro
+  // Em geral, causa a morte do processo que causou o erro
+  // Ainda não temos processos, causa a parada da CPU
+  // t2: com suporte a processos, deveria pegar o valor do registrador erro
+  //   no descritor do processo corrente, e reagir de acordo com esse erro
+  //   (em geral, matando o processo)
+   //  Obtém código do erro do descritor e mata o processo corrente.
   if(self->processo_corrente != NO_PROCESS){
     pcb* proc = self->tabela_de_processos[self->processo_corrente];
-    err_t erro = proc->ctx_cpu.erro; // Pega o erro do contexto salvo
+    err_t erro = proc->ctx_cpu.erro;
     console_printf("SO: erro na CPU do processo %d: %s", proc->pid, err_nome(erro));
-
-    // *** REQUISITO 5 ***
-    // Acorda qualquer processo que esteja esperando por este
-    so_acorda_processos_esperando(self, proc->pid);
-    // *******************
-
+    so_acorda_processos_esperando(self, proc->pid); //acorda processos esperando esse processo
     proc->usando = 0;
     proc->estado = P_TERMINOU;
     self->processo_corrente = NO_PROCESS; //nenhum processo está executando
     libera_terminal(self, proc->pid); //libera o terminal usado pelo processo
-
-    // O PCB será limpo pelo escalonador na próxima vez que rodar
+    console_printf("SO: IRQ TRATADA -- erro na CPU: %s", err_nome(erro));
+    self->erro_interno = true;
+  }
     return;
   }
+  //err_t err = self->regERRO;
   
-  // Erro de CPU sem processo corrente? Isso é um pânico.
-  console_printf("SO: IRQ TRATADA -- erro na CPU sem processo corrente!: %s", err_nome(self->regERRO));
-  self->erro_interno = true;
-}
 
 // interrupção gerada quando o timer expira
 static void so_trata_irq_relogio(so_t *self)
@@ -599,23 +508,36 @@ static void so_trata_irq_chamada_sistema(so_t *self)
 
 // implementação da chamada se sistema SO_LE
 // faz a leitura de um dado da entrada corrente do processo, coloca o dado no reg A
-// implementação da chamada se sistema SO_LE
-// faz a leitura de um dado da entrada corrente do processo, coloca o dado no reg A
 static void so_chamada_le(so_t *self)
 {
+  // implementação com espera ocupada (retirada no t2)
+  //   t2: deveria realizar a leitura somente se a entrada estiver disponível,
+  //     senão, deveria bloquear o processo.
+  //   no caso de bloqueio do processo, a leitura (e desbloqueio) deverá
+  //     ser feita mais tarde, em tratamentos pendentes em outra interrupção,
+  //     ou diretamente em uma interrupção específica do dispositivo, se for
+  //     o caso
+  // implementação lendo direto do terminal A
+  //   t2: deveria usar dispositivo de entrada corrente do processo
   pcb *proc = self->tabela_de_processos[self->processo_corrente];
-  dispositivo_id_t entrada = proc->entrada;
-  dispositivo_id_t entrada_ok = entrada + 1;
+  dispositivo_id_t entrada = proc->entrada;  // Ex: D_TERM_B_TECLADO
+  dispositivo_id_t entrada_ok = entrada + 1; // Ex: D_TERM_B_TECLADO_OK
 
   int estado;
   if (es_le(self->es, entrada_ok, &estado) != ERR_OK) {
     console_printf("SO: problema no acesso ao estado do teclado (pid %d)", proc->pid);
-    proc->ctx_cpu.regA = -1; // Retorna erro
+    proc->ctx_cpu.regA = -1; //retorna erro
     self->erro_interno = true;
     return;
   }
-
-  if (estado != 0) {
+    
+   /*  if (estado != 0) break;
+    // como não está saindo do SO, a unidade de controle não está executando seu laço.
+    // esta gambiarra faz pelo menos a console ser atualizada
+    // t2: com a implementação de bloqueio de processo, esta gambiarra não
+    //   deve mais existir.
+    console_tictac(self->console); */
+ if (estado != 0) {
     // Dispositivo PRONTO: lê imediatamente
     int dado;
     if (es_le(self->es, entrada, &dado) != ERR_OK) {
@@ -624,25 +546,36 @@ static void so_chamada_le(so_t *self)
       self->erro_interno = true;
       return;
     }
-    // Coloca o dado no registrador A do PROCESSO
-    proc->ctx_cpu.regA = dado;
+    proc->ctx_cpu.regA = dado; //Coloca o dado no registrador A do PROCESSO
   } else {
-    // Dispositivo NÃO PRONTO: bloqueia o processo
+    //dspositivo NÃO PRONTO: bloqueia o processo
     console_printf("SO: processo %d bloqueado esperando E/S (leitura)", proc->pid);
     proc->estado = P_BLOQUEADO;
-    proc->dispositivo_bloqueado = entrada; // Salva qual dispositivo está esperando
-    self->processo_corrente = NO_PROCESS; // Força o escalonador a rodar
+    proc->dispositivo_bloqueado = entrada; //salva qual dispositivo está esperando
+    self->processo_corrente = NO_PROCESS; //força o escalonador a rodar
   }
+  // escreve no reg A do processador
+  // (na verdade, na posição onde o processador vai pegar o A quando retornar da int)
+  // t2: se houvesse processo, deveria escrever no reg A do processo
+  // t2: o acesso só deve ser feito nesse momento se for possível; se não, o processo
+  //   é bloqueado, e o acesso só deve ser feito mais tarde (e o processo desbloqueado)
+  /* self->regA = dado;
+  self->tabela_de_processos[self->processo_corrente]->ctx_cpu.regA = dado; */
 }
+
 // implementação da chamada se sistema SO_ESCR
 // escreve o valor do reg X na saída corrente do processo
-
 static void so_chamada_escr(so_t *self)
 {
+  // implementação com espera ocupada
+  //   t2: deveria bloquear o processo se dispositivo ocupado
+  // implementação escrevendo direto do terminal A
+  //   t2: deveria usar o dispositivo de saída corrente do processo
   pcb *proc = self->tabela_de_processos[self->processo_corrente];
-  dispositivo_id_t saida = proc->saida;
-  dispositivo_id_t saida_ok = saida + 1;
+  dispositivo_id_t saida = proc->saida;        // Ex: D_TERM_B_TELA
+  dispositivo_id_t saida_ok = saida + 1;       // Ex: D_TERM_B_TELA_OK
 
+  
   int estado;
   if (es_le(self->es, saida_ok, &estado) != ERR_OK) {
     console_printf("SO: problema no acesso ao estado da tela (pid %d)", proc->pid);
@@ -651,10 +584,19 @@ static void so_chamada_escr(so_t *self)
     return;
   }
 
-  if (estado != 0) {
-    // Dispositivo PRONTO: escreve imediatamente
-    // Pega o dado do registrador X do PROCESSO
-    int dado = proc->ctx_cpu.regX;
+    /* if (estado != 0) break;
+    // como não está saindo do SO, a unidade de controle não está executando seu laço.
+    // esta gambiarra faz pelo menos a console ser atualizada
+    // t2: não deve mais existir quando houver suporte a processos, porque o SO não poderá
+    //   executar por muito tempo, permitindo a execução do laço da unidade de controle
+    console_tictac(self->console); */
+  
+  // está lendo o valor de X e escrevendo o de A direto onde o processador colocou/vai pegar
+  // t2: deveria usar os registradores do processo que está realizando a E/S
+  // t2: caso o processo tenha sido bloqueado, esse acesso deve ser realizado em outra execução
+  //   do SO, quando ele verificar que esse acesso já pode ser feito.
+  if (estado != 0) {//dispositivo pronto, escreve o dado na tela
+    int dado = proc->ctx_cpu.regX;//pega o dado do reg X do processo
     if (es_escreve(self->es, saida, dado) != ERR_OK) {
       console_printf("SO: problema no acesso à tela (pid %d)", proc->pid);
       proc->ctx_cpu.regA = -1; // Retorna erro
@@ -793,12 +735,7 @@ static void so_chamada_mata_proc(so_t *self)
         proc_corrente->ctx_cpu.regA = -1; // erro: PID não encontrado
         return;
     }
-
-    // *** REQUISITO 5 ***
-    // Acorda qualquer processo que esteja esperando por este
     so_acorda_processos_esperando(self, proc_alvo->pid);
-    // *******************
-
     // marca como terminado
     proc_alvo->estado = P_TERMINOU;
     proc_alvo->usando = 0;
@@ -806,7 +743,7 @@ static void so_chamada_mata_proc(so_t *self)
     // libera terminal
     libera_terminal(self, proc_alvo->pid);
 
-    // remove da tabela (O escalonador também faz isso, mas tudo bem)
+    // remove da tabela
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (self->tabela_de_processos[i] == proc_alvo) {
             free(proc_alvo);
@@ -823,47 +760,33 @@ static void so_chamada_mata_proc(so_t *self)
     proc_corrente->ctx_cpu.regA = 0; // sucesso
 }
 
+
+
 // implementação da chamada se sistema SO_ESPERA_PROC
 // espera o fim do processo com pid X
 //bloqueia o processo corrente(init) se o processo com pid X não tiver terminado
-// implementação da chamada se sistema SO_ESPERA_PROC
-// espera o fim do processo com pid X
 static void so_chamada_espera_proc(so_t *self)
 {
+  // t2: deveria bloquear o processo se for o caso (e desbloquear na morte do esperado)
+  //bloquei o processo corrente
+  //verificar se o processo a se esperar é valido 
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
-  int pid_esperado = proc_corrente->ctx_cpu.regX; // PID está em X
-
-  // Erro: esperando a si mesmo?
-  if (pid_esperado == proc_corrente->pid) {
-    console_printf("SO: processo %d não pode esperar por si mesmo.", proc_corrente->pid);
-    proc_corrente->ctx_cpu.regA = -1; // Retorna erro
+  int pid_esperado = proc_corrente->ctx_cpu.regX; //ver o que tem em X, que é o pid do processo esperado
+  pcb *proc_esperado = achar_processo(self, pid_esperado);
+  if(pid_esperado == proc_corrente->pid || !proc_esperado) {
+    //não pode esperar ele mesmo
+    self->erro_interno = true;
     return;
   }
-
-  pcb *proc_alvo = achar_processo(self, pid_esperado);
-
-  // Erro: processo não existe?
-  if (proc_alvo == NULL) {
-    console_printf("SO: processo %d tentando esperar por PID %d, que não existe.", 
-                   proc_corrente->pid, pid_esperado);
-    proc_corrente->ctx_cpu.regA = -1; // Retorna erro
-    return;
+  console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
+  //bloqueia o processo chamador 
+  if(proc_esperado->estado != P_TERMINOU){
+    proc_corrente->estado = P_BLOQUEADO;
+    proc_corrente->pid_esperando = pid_esperado;
+    //self->processo_corrente = NO_PROCESS; // Força escalonamento
   }
 
-  // Processo existe. Já terminou?
-  if (proc_alvo->estado == P_TERMINOU) {
-    console_printf("SO: processo %d esperou por %d, que já terminou.", 
-                   proc_corrente->pid, pid_esperado);
-    proc_corrente->ctx_cpu.regA = 0; // Retorna sucesso imediatamente
-    return;
-  }
-
-  // Processo existe e está vivo. Bloqueia o processo corrente.
-  console_printf("SO: processo %d bloqueado esperando por PID %d", 
-                 proc_corrente->pid, pid_esperado);
-  proc_corrente->estado = P_BLOQUEADO;
-  proc_corrente->pid_esperando = pid_esperado; // Salva quem está esperando
-  self->processo_corrente = NO_PROCESS; // Força escalonamento
+  
 }
 
 
