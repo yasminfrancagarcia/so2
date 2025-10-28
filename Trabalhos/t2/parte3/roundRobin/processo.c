@@ -20,6 +20,7 @@ pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida) {
     novo_processo->saida = saida;
     novo_processo->dispositivo_bloqueado = -1; // Nenhum dispositivo bloqueado inicialmente
     novo_processo->pid_esperando = -1; // Nenhum processo esperando inicialmente
+    novo_processo->quantum = QUANTUM; // Inicializa o quantum
     return novo_processo;
 }
 
