@@ -81,6 +81,8 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console)
   // quando a CPU executar uma instrução CHAMAC, deve chamar a função
   //   so_trata_interrupcao, com primeiro argumento um ptr para o SO
   cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
+  self->fila_prontos = cria_fila();
+  self->num_proc_criados = 0;
   // inicializar terminais
   for (int i = 0; i < TERMINAIS; i++)
   {
@@ -228,17 +230,16 @@ static void so_trata_pendencias(so_t *self)
       // Desbloqueia o processo
       proc->estado = P_PRONTO;
       proc->dispositivo_bloqueado = -1; // marca que não está mais esperando E/S
+      enfileira(self->fila_prontos, proc->pid); // coloca na fila de prontos
     }
   }
 }
 
 static void so_escalona(so_t *self)
 {
-  // escolhe o próximo processo a executar, que passa a ser o processo
-  //   corrente; pode continuar sendo o mesmo de antes ou não
-  // t2: na primeira versão, escolhe um processo pronto caso o processo
-  //   corrente não possa continuar executando, senão deixa o mesmo processo.
-  //   depois, implementa um escalonador melhor
+  // escalinadir round robin
+  // t2: escolhe o próximo processo a executar, de acordo com a política
+
 
   // limpa processos terminados
   for (int i = 0; i < MAX_PROCESSES; i++)
@@ -252,6 +253,7 @@ static void so_escalona(so_t *self)
     }
   }
   // verifica se o processo corrente pode continuar executando
+  //self->processo_corrente != NO_PROCESS 
   if (self->processo_corrente != NO_PROCESS &&
       self->tabela_de_processos[self->processo_corrente]->estado == P_EXECUTANDO)
   {
@@ -259,12 +261,19 @@ static void so_escalona(so_t *self)
     return;
   }
 
-  // procura um processo pronto para executar
+  // logica do round robin
+  // logica do round robin
+  if (fila_vazia(self->fila_prontos)) {
+    self->processo_corrente = NO_PROCESS;
+    return;
+  }
+  int escolhido = self->fila_prontos->inicio->pid;
   for (int i = 0; i < MAX_PROCESSES; i++)
   {
-    if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->estado == P_PRONTO)
+    if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->pid == escolhido &&
+        escolhido!= -1)
     {
-      // encontrou um processo pronto
+      //vira o processo corrente
       self->processo_corrente = i;
       self->tabela_de_processos[i]->estado = P_EXECUTANDO;
       return;
@@ -408,6 +417,9 @@ static void so_trata_reset(so_t *self)
   processo_inicial->dispositivo_bloqueado = -1;
   processo_inicial->pid_esperando = -1;
   processo_inicial->estado = P_EXECUTANDO;
+  // coloca init na fila de prontos
+  enfileira(self->fila_prontos, processo_inicial->pid);
+  self->num_proc_criados++;
 }
 
 // Acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
@@ -424,7 +436,7 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
     if (proc != NULL && proc->estado == P_BLOQUEADO && proc->pid_esperando == pid_que_morreu)
     {
       console_printf("SO: processo %d (que morreu) estava sendo esperado por %d. Acordando.",
-                     pid_que_morreu, proc->pid);
+      pid_que_morreu, proc->pid);
       proc->estado = P_PRONTO;
       proc->pid_esperando = -1; // Não está mais esperando
       proc->ctx_cpu.regA = 0;   // Retorna sucesso para a chamada SO_ESPERA_PROC
@@ -477,6 +489,9 @@ static void so_trata_irq_relogio(so_t *self)
   //   por exemplo, decrementa o quantum do processo corrente, quando se tem
   //   um escalonador com quantum
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+  if (proc_corrente == NULL || self->processo_corrente == NO_PROCESS) {
+    return;
+  }
   proc_corrente->quantum--;
   if (proc_corrente->quantum <= 0 && proc_corrente->estado!= P_BLOQUEADO){
     console_printf("SO: quantum do processo %d expirou, forçando troca de contexto.", proc_corrente->pid);

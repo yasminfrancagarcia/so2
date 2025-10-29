@@ -1,7 +1,7 @@
 #ifndef PROCESSO_H
 #define PROCESSO_H
 
-#define QUANTUM 5
+#define QUANTUM 10
 
 #include <stdio.h>
 

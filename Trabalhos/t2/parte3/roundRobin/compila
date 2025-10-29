@@ -13,7 +13,8 @@ gcc -Wall -Werror -g   -c -o controle.o controle.c
 gcc -Wall -Werror -g   -c -o so.o so.c
 gcc -Wall -Werror -g   -c -o irq.o irq.c
 gcc -Wall -Werror -g   -c -o processo.o processo.c
-gcc   main.o cpu.o es.o memoria.o relogio.o console.o terminal.o tela_curses.o instrucao.o err.o programa.o controle.o so.o irq.o processo.o -lcurses -o main
+gcc -Wall -Werror -g   -c -o fila.o fila.c
+gcc   main.o cpu.o es.o memoria.o relogio.o console.o terminal.o tela_curses.o instrucao.o err.o programa.o controle.o so.o irq.o processo.o fila.o -lcurses -o main
 gcc -Wall -Werror -g   -c -o montador.o montador.c
 gcc   montador.o instrucao.o err.o  -lcurses -o montador
 ./montador -e 0 bios.asm
