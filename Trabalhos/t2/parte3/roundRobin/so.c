@@ -268,6 +268,8 @@ static void so_escalona(so_t *self)
     return;
   }
   int escolhido = self->fila_prontos->inicio->pid;
+  // REMOVE o processo da fila de prontos (pois ele vai executar)
+  desenfileira(self->fila_prontos); // <-- ADICIONE ISSO AQUI
   for (int i = 0; i < MAX_PROCESSES; i++)
   {
     if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->pid == escolhido &&
@@ -403,7 +405,7 @@ static void so_trata_reset(so_t *self)
   // marcar o terminal usado
   self->terminais_usados[0] = processo_inicial->pid;
   self->tabela_de_processos[0] = processo_inicial;
-  self->processo_corrente = 0; // índice do processo inicial na tabela
+  self->processo_corrente = NO_PROCESS; // índice do processo inicial na tabela
 
   // altera o PC para o endereço de carga
   // self->regPC = ender; // deveria ser no processo
@@ -412,11 +414,11 @@ static void so_trata_reset(so_t *self)
   processo_inicial->ctx_cpu.regX = 0; // <-- ESSENCIAL
   processo_inicial->ctx_cpu.erro = 0; // <-- ESSENCIAL
 
-  self->regPC = processo_inicial->ctx_cpu.pc;
+  //self->regPC = processo_inicial->ctx_cpu.pc;
   // Inicializa campos de bloqueio
   processo_inicial->dispositivo_bloqueado = -1;
   processo_inicial->pid_esperando = -1;
-  processo_inicial->estado = P_EXECUTANDO;
+  processo_inicial->estado = P_PRONTO;
   // coloca init na fila de prontos
   enfileira(self->fila_prontos, processo_inicial->pid);
   self->num_proc_criados++;
@@ -498,7 +500,7 @@ static void so_trata_irq_relogio(so_t *self)
     proc_corrente->estado = P_PRONTO;
     proc_corrente->quantum = QUANTUM; // reseta o quantum
     self->processo_corrente = NO_PROCESS; // força o escalonador a escolher outro processo
-    desenfileira(self->fila_prontos); // retira o processo corrente da fila de prontos
+    enfileira(self->fila_prontos, proc_corrente->pid);
   }
 }
 
@@ -604,7 +606,7 @@ static void so_chamada_le(so_t *self)
     proc->estado = P_BLOQUEADO;
     proc->dispositivo_bloqueado = entrada; // salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS;  // força o escalonador a rodar
-    desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
+    //desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
   }
   // escreve no reg A do processador
   // (na verdade, na posição onde o processador vai pegar o A quando retornar da int)
@@ -666,7 +668,7 @@ static void so_chamada_escr(so_t *self)
     proc->estado = P_BLOQUEADO;
     proc->dispositivo_bloqueado = saida;  // Salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS; // Força o escalonador a rodar
-    desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
+    //desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
   }
 }
 // retorna o índice do primeiro terminal livre ou -1 se todos estiverem ocupados
@@ -866,8 +868,8 @@ static void so_chamada_espera_proc(so_t *self)
   {
     proc_corrente->estado = P_BLOQUEADO;
     proc_corrente->pid_esperando = pid_esperado;
-    desenfileira(self->fila_prontos); // retira o processo corrente da fila de prontos
-    // self->processo_corrente = NO_PROCESS; // Força escalonamento
+    //desenfileira(self->fila_prontos); // retira o processo corrente da fila de prontos
+    self->processo_corrente = NO_PROCESS; // Força escalonamento
   }
 }
 
