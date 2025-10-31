@@ -17,6 +17,7 @@ fila* cria_fila();
 bool fila_vazia(fila* f);
 void destroi_fila(fila* f);
 void enfileira(fila* f, int pid);
-int desenfileira(fila* f);
+int desenfileira(fila* f, int pid);
+void imprime_fila(fila* f);
 
 #endif

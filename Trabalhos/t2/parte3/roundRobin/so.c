@@ -1,7 +1,4 @@
-// tenho esse arquivo so.c, que a a base de um sistema operacional experimental dado pelo professor. Consegue me dizer pq ele nao entra no programa init para iniciar ? // so.c
-//  sistema operacional
-//  simulador de computador
-//  so25b
+
 
 // ---------------------------------------------------------------------
 // INCLUDES {{{1
@@ -268,8 +265,11 @@ static void so_escalona(so_t *self)
     return;
   }
   int escolhido = self->fila_prontos->inicio->pid;
+  console_printf("====> processo %d escolhido \n", escolhido);
   // REMOVE o processo da fila de prontos (pois ele vai executar)
-  desenfileira(self->fila_prontos); // <-- ADICIONE ISSO AQUI
+  desenfileira(self->fila_prontos, escolhido); // <-- ADICIONE ISSO AQUI
+  imprime_fila(self->fila_prontos);
+
   for (int i = 0; i < MAX_PROCESSES; i++)
   {
     if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->pid == escolhido &&
@@ -606,7 +606,7 @@ static void so_chamada_le(so_t *self)
     proc->estado = P_BLOQUEADO;
     proc->dispositivo_bloqueado = entrada; // salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS;  // força o escalonador a rodar
-    //desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
+    //desenfileira(self->fila_prontos, proc->pid);    // retira o processo corrente da fila de prontos
   }
   // escreve no reg A do processador
   // (na verdade, na posição onde o processador vai pegar o A quando retornar da int)
@@ -668,7 +668,7 @@ static void so_chamada_escr(so_t *self)
     proc->estado = P_BLOQUEADO;
     proc->dispositivo_bloqueado = saida;  // Salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS; // Força o escalonador a rodar
-    //desenfileira(self->fila_prontos);    // retira o processo corrente da fila de prontos
+    //desenfileira(self->fila_prontos, proc->pid);    // retira o processo corrente da fila de prontos
   }
 }
 // retorna o índice do primeiro terminal livre ou -1 se todos estiverem ocupados
@@ -800,17 +800,18 @@ static void so_chamada_mata_proc(so_t *self)
 {
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
   int pid_a_matar = proc_corrente->ctx_cpu.regX;
-
   pcb *proc_alvo;
+
+  // Variável para rastrear se o processo está se matando
+  bool matando_a_si_mesmo = false; // <-- Variável de controle
 
   if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid)
   {
-    // mata a si mesmo
     proc_alvo = proc_corrente;
+    matando_a_si_mesmo = true; // <-- Marcar que está se matando
   }
   else
   {
-    // mata outro processo
     proc_alvo = achar_processo(self, pid_a_matar);
   }
 
@@ -819,16 +820,16 @@ static void so_chamada_mata_proc(so_t *self)
     proc_corrente->ctx_cpu.regA = -1; // erro: PID não encontrado
     return;
   }
+
   so_acorda_processos_esperando(self, proc_alvo->pid);
-  // marca como terminado
+
+  // ... (libera terminal, desenfileira, etc.) ...
   proc_alvo->estado = P_TERMINOU;
   proc_alvo->usando = 0;
-
-  // libera terminal
   libera_terminal(self, proc_alvo->pid);
-  desenfileira(self->fila_prontos);
+  desenfileira(self->fila_prontos, proc_alvo->pid);
 
-  // remove da tabela
+  // remove da tabela e libera a memória
   for (int i = 0; i < MAX_PROCESSES; i++){
     if (self->tabela_de_processos[i] == proc_alvo){
       free(proc_alvo);
@@ -838,11 +839,13 @@ static void so_chamada_mata_proc(so_t *self)
   }
 
   // se matou a si mesmo, não há processo corrente
-  if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid){
+  if (matando_a_si_mesmo){
     self->processo_corrente = NO_PROCESS;
+  } else {
+    // SÓ definir o valor de retorno se o processo chamador NÃO morreu
+    proc_corrente->ctx_cpu.regA = 0; // sucesso
   }
-
-  proc_corrente->ctx_cpu.regA = 0; // sucesso
+  // Se ele se matou, NADA é escrito no regA, evitando o Use After Free.
 }
 
 // implementação da chamada se sistema SO_ESPERA_PROC
@@ -850,26 +853,40 @@ static void so_chamada_mata_proc(so_t *self)
 // bloqueia o processo corrente(init) se o processo com pid X não tiver terminado
 static void so_chamada_espera_proc(so_t *self)
 {
-  // t2: deveria bloquear o processo se for o caso (e desbloquear na morte do esperado)
-  // bloquei o processo corrente
-  // verificar se o processo a se esperar é valido
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
-  int pid_esperado = proc_corrente->ctx_cpu.regX; // ver o que tem em X, que é o pid do processo esperado
-  pcb *proc_esperado = achar_processo(self, pid_esperado);
-  if (pid_esperado == proc_corrente->pid || !proc_esperado)
+  int pid_esperado = proc_corrente->ctx_cpu.regX;
+
+  // 1. Checar se o PID é inválido (0 ou ele mesmo)
+  if (pid_esperado <= 0 || pid_esperado == proc_corrente->pid)
   {
-    // não pode esperar ele mesmo
-    self->erro_interno = true;
+    proc_corrente->ctx_cpu.regA = -1; // Retorna erro no RegA
     return;
   }
-  console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
-  // bloqueia o processo chamador
+
+  pcb *proc_esperado = achar_processo(self, pid_esperado);
+
+  // 2. Checar se o processo existe na tabela
+  if (proc_esperado == NULL)
+  {
+    // O processo não existe (provavelmente JÁ TERMINOU)
+    // Isso NÃO é um erro. Apenas não há o que esperar.
+    proc_corrente->ctx_cpu.regA = 0; // Retorna SUCESSO imediatamente.
+    return;                          // <-- IMPORTANTE
+  }
+
+  // 3. O processo existe. Se ele NÃO terminou, bloqueia.
+  // Esta é a sua linha 871. Agora ela está segura.
   if (proc_esperado->estado != P_TERMINOU)
   {
+    console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
     proc_corrente->estado = P_BLOQUEADO;
     proc_corrente->pid_esperando = pid_esperado;
-    //desenfileira(self->fila_prontos); // retira o processo corrente da fila de prontos
-    self->processo_corrente = NO_PROCESS; // Força escalonamento
+    self->processo_corrente = NO_PROCESS;
+  }
+  else
+  {
+    // O processo existe mas seu estado é P_TERMINOU (ainda não foi limpo)
+    proc_corrente->ctx_cpu.regA = 0; // Retorna SUCESSO.
   }
 }
 
