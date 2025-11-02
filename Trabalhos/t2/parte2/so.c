@@ -1,7 +1,3 @@
-//tenho esse arquivo so.c, que a a base de um sistema operacional experimental dado pelo professor. Consegue me dizer pq ele nao entra no programa init para iniciar ? // so.c
-// sistema operacional
-// simulador de computador
-// so25b
 
 // ---------------------------------------------------------------------
 // INCLUDES {{{1

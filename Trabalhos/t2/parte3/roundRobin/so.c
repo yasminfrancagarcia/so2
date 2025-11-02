@@ -28,6 +28,13 @@
 // constantes de processos
 #define MAX_PROCESSES 4
 #define NO_PROCESS -1
+
+//métricas
+/* 1- número de processos criados
+2- tempo total de execução
+3 tempo total em que o sistema ficou ocioso (todos os processos bloqueados)
+4- número de interrupções recebidas de cada tipo
+5- número de preempções */
 struct so_t
 {
   cpu_t *cpu;
@@ -45,7 +52,15 @@ struct so_t
   // idx = 1 -> terminal B...
   int terminais_usados[4];
   fila *fila_prontos;   // fila de processos prontos
-  int num_proc_criados; // número de processos ativos
+  //métricas
+  int num_proc_criados; // 1- número de processos ativos (métrica 2 nao precisa ser guardada aqui)
+  int tempo_ocioso;    // 3- tempo total em que o sistema ficou ocioso
+  int contagem_irq[N_IRQ]; // 4- número de interrupções recebidas de cada tipo
+  int num_preemcoes_total;      // 5- número de preempções
+  //auxiliar metricas 3 e 9
+  int tempo_ultima_atualizacao_metricas; // Timestamp da última atualização de métricas
+  //Novo Campo para Histórico, guardará as métricas de TODOS os processos que já existiram
+    metricas_processo_final_t historico_metricas[MAX_PROCESSES];
 };
 
 // função de tratamento de interrupção (entrada no SO)
