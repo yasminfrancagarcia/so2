@@ -386,7 +386,7 @@ static void so_trata_reset(so_t *self)
   
 }
 
-// Acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
+//acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
 static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
 {
   if (pid_que_morreu <= 0) return; // PID inválido
@@ -394,7 +394,7 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
   for (int i = 0; i < MAX_PROCESSES; i++) {
     pcb* proc = self->tabela_de_processos[i];
     
-    // Se o processo [i] estava bloqueado esperando o PID que acabou de morrer...
+    //se o processo [i] estava bloqueado esperando o PID que acabou de morrer...
     if (proc != NULL && 
         proc->estado == P_BLOQUEADO && 
         proc->pid_esperando == pid_que_morreu) 
@@ -402,8 +402,8 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
       console_printf("SO: processo %d (que morreu) estava sendo esperado por %d. Acordando.",
                      pid_que_morreu, proc->pid);
       proc->estado = P_PRONTO;
-      proc->pid_esperando = -1; // Não está mais esperando
-      proc->ctx_cpu.regA = 0; // Retorna sucesso para a chamada SO_ESPERA_PROC
+      proc->pid_esperando = -1; // não está mais esperando
+      proc->ctx_cpu.regA = 0; // retorna sucesso para a chamada SO_ESPERA_PROC
     }
   }
 }

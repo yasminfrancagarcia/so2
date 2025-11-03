@@ -439,7 +439,7 @@ static void so_trata_reset(so_t *self)
   self->num_proc_criados++;
 }
 
-// Acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
+//acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
 static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
 {
   if (pid_que_morreu <= 0)
@@ -449,14 +449,14 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
   {
     pcb *proc = self->tabela_de_processos[i];
 
-    // Se o processo [i] estava bloqueado esperando o PID que acabou de morrer...
+    //se o processo [i] estava bloqueado esperando o PID que acabou de morrer
     if (proc != NULL && proc->estado == P_BLOQUEADO && proc->pid_esperando == pid_que_morreu)
     {
       console_printf("SO: processo %d (que morreu) estava sendo esperado por %d. Acordando.",
       pid_que_morreu, proc->pid);
       proc->estado = P_PRONTO;
-      proc->pid_esperando = -1; // Não está mais esperando
-      proc->ctx_cpu.regA = 0;   // Retorna sucesso para a chamada SO_ESPERA_PROC
+      proc->pid_esperando = -1; //nao está mais esperando
+      proc->ctx_cpu.regA = 0;   //retorna sucesso para a chamada SO_ESPERA_PROC
       // colocar na fila de prontos
       enfileira(self->fila_prontos, proc->pid);
     }
@@ -818,12 +818,12 @@ static void so_chamada_mata_proc(so_t *self)
   pcb *proc_alvo;
 
   // Variável para rastrear se o processo está se matando
-  bool matando_a_si_mesmo = false; // <-- Variável de controle
+  bool matando_a_si_mesmo = false; 
 
   if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid)
   {
     proc_alvo = proc_corrente;
-    matando_a_si_mesmo = true; // <-- Marcar que está se matando
+    matando_a_si_mesmo = true; //marcar que está se matando
   }
   else
   {
@@ -832,13 +832,12 @@ static void so_chamada_mata_proc(so_t *self)
 
   if (proc_alvo == NULL)
   {
-    proc_corrente->ctx_cpu.regA = -1; // erro: PID não encontrado
+    proc_corrente->ctx_cpu.regA = -1; // erro: pid não encontrado
     return;
   }
 
   so_acorda_processos_esperando(self, proc_alvo->pid);
 
-  // ... (libera terminal, desenfileira, etc.) ...
   proc_alvo->estado = P_TERMINOU;
   proc_alvo->usando = 0;
   libera_terminal(self, proc_alvo->pid);
@@ -860,7 +859,7 @@ static void so_chamada_mata_proc(so_t *self)
     // SÓ definir o valor de retorno se o processo chamador NÃO morreu
     proc_corrente->ctx_cpu.regA = 0; // sucesso
   }
-  // Se ele se matou, NADA é escrito no regA, evitando o Use After Free.
+  //se ele se matou NADA é escrito no regA.
 }
 
 // implementação da chamada se sistema SO_ESPERA_PROC
@@ -871,7 +870,7 @@ static void so_chamada_espera_proc(so_t *self)
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
   int pid_esperado = proc_corrente->ctx_cpu.regX;
 
-  // 1. Checar se o PID é inválido (0 ou ele mesmo)
+  // checar se o pid é inválido (0 ou ele mesmo)
   if (pid_esperado <= 0 || pid_esperado == proc_corrente->pid)
   {
     proc_corrente->ctx_cpu.regA = -1; // Retorna erro no RegA
@@ -880,17 +879,16 @@ static void so_chamada_espera_proc(so_t *self)
 
   pcb *proc_esperado = achar_processo(self, pid_esperado);
 
-  // 2. Checar se o processo existe na tabela
+  //checar se o processo existe na tabela
   if (proc_esperado == NULL)
   {
-    // O processo não existe (provavelmente JÁ TERMINOU)
-    // Isso NÃO é um erro. Apenas não há o que esperar.
-    proc_corrente->ctx_cpu.regA = 0; // Retorna SUCESSO imediatamente.
-    return;                          // <-- IMPORTANTE
+    //o processo não existe (provavelmente JÁ TERMINOU)
+    //não há porque esperar
+    proc_corrente->ctx_cpu.regA = 0; // retorna SUCESSO imediatamente
+    return;                        
   }
 
-  // 3. O processo existe. Se ele NÃO terminou, bloqueia.
-  // Esta é a sua linha 871. Agora ela está segura.
+  // O processo existe. Se ele NÃO terminou, bloqueia.
   if (proc_esperado->estado != P_TERMINOU)
   {
     console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
