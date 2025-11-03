@@ -56,7 +56,7 @@ typedef struct {
     // 10- tempo médio de resposta (desbloqueio -> escalonamento)
     //ver se nao precisa de uma variavel que diga quando o processo foi bloqueado
     int tempo_desbloqueou; // Timestamp de quando saiu de BLOQUEADO
-    int tempo_total_resposta_pos_bloqueio;
+    int tempo_total_resposta_pos_bloqueio;// soma dos tempos de resposta pós bloqueio
     int num_respostas_pos_bloqueio; // N. de vezes que foi de BLOQUEADO -> PRONTO 
 } pcb;
 
@@ -65,20 +65,20 @@ typedef struct {
     int pid;
     bool utilizado; // Para sabermos se esse slot do histórico foi usado
 
-    // Métrica 6
+    //métrica 6
     int tempo_criacao;
     int tempo_termino;
 
-    // Métrica 7
-    int num_preempcoes;
+    //métrica 7
+    int num_preempcoes_proc;
 
-    // Métrica 8
-    int contagem_estado[P_N_ESTADOS];
+    //métrica 8
+    int contagem_estados[P_N_ESTADOS];
 
-    // Métrica 9
+    //métrica 9
     int tempo_em_estado[P_N_ESTADOS];
 
-    // Métrica 10
+    //métrica 10
     int tempo_total_resposta_pos_bloqueio;
     int num_respostas_pos_bloqueio;
 } metricas_processo_final_t;

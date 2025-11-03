@@ -17,8 +17,7 @@ typedef struct so_t so_t;
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console);
 void so_destroi(so_t *self);
-
-
+void imprimir_dados(so_t *self);
 // Chamadas de sistema
 // Uma chamada de sistema é realizada colocando a identificação da
 //   chamada (um dos valores abaixo) no registrador A e executando a
@@ -77,5 +76,6 @@ void so_destroi(so_t *self);
 // bloqueia o processo chamador até que o processo com o pid informado termine
 // retorna sem bloquear, com erro, se não existir processo com esse pid
 #define SO_ESPERA_PROC 9
+
 
 #endif // SO_H
