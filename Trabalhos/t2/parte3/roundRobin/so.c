@@ -551,54 +551,78 @@ static void so_trata_pendencias(so_t *self)
 
 static void so_escalona(so_t *self)
 {
-  // escalinadir round robin
-  // t2: escolhe o próximo processo a executar, de acordo com a política
-  // limpa processos terminados
+  // 1. Limpa processos terminados
   for (int i = 0; i < MAX_PROCESSES; i++)
   {
-    pcb *proc = self->tabela_de_processos[i]; // pega o ponteiro
+    pcb *proc = self->tabela_de_processos[i];
     if (proc != NULL && proc->estado == P_TERMINOU)
     {
-      libera_terminal(self, self->tabela_de_processos[i]->pid);
-      //SALVA MÉTRICAS ANTES DO FREE 
+      libera_terminal(self, proc->pid);
+      
+      // Salva métricas (da sua versão nova)
       so_salva_metricas_finais(self, proc); 
-      free(self->tabela_de_processos[i]);
+
+      free(proc);
       self->tabela_de_processos[i] = NULL;
     }
   }
-  // verifica se o processo corrente pode continuar executando
-  // self->processo_corrente != NO_PROCESS
-  if (self->processo_corrente != NO_PROCESS &&
-      self->tabela_de_processos[self->processo_corrente]->estado == P_EXECUTANDO)
+
+  // 2. Verifica se o processo corrente pode continuar
+  pcb *proc_atual = (self->processo_corrente == NO_PROCESS) ? 
+                     NULL : self->tabela_de_processos[self->processo_corrente];
+
+  if (proc_atual != NULL && proc_atual->estado == P_EXECUTANDO)
   {
-    // processo atual ainda está executando
-    return;
+    return; // Deixa ele continuar
   }
 
-  // logica do round robin
-  if (fila_vazia(self->fila_prontos))
+  // 3. Loop: Procura por um processo PRONTO na fila
+  while (!fila_vazia(self->fila_prontos))
   {
-    self->processo_corrente = NO_PROCESS;
-    return;
-  }
-  int escolhido = self->fila_prontos->inicio->pid;
-  console_printf("====> processo %d escolhido \n", escolhido);
-  // REMOVE o processo da fila de prontos (pois ele vai executar)
-  desenfileira(self->fila_prontos, escolhido); 
-  imprime_fila(self->fila_prontos);
+    // 4. Pega o primeiro da fila
+    int escolhido_pid = self->fila_prontos->inicio->pid;
+    desenfileira(self->fila_prontos, escolhido_pid); // Remove da fila
 
-  for (int i = 0; i < MAX_PROCESSES; i++)
-  {
-    if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->pid == escolhido &&
-      escolhido != -1)
-    {
-      // vira o processo corrente
-      self->processo_corrente = i;
-      //self->tabela_de_processos[i]->estado = P_EXECUTANDO;
-      so_muda_estado(self, self->tabela_de_processos[i], P_EXECUTANDO); // usa a função que contabiliza métricas
-      return;
+    // 5. Acha o PCB desse processo
+    pcb *proc_escolhido = NULL;
+    int indice_escolhido = -1;
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (self->tabela_de_processos[i] != NULL &&
+            self->tabela_de_processos[i]->pid == escolhido_pid) {
+            proc_escolhido = self->tabela_de_processos[i];
+            indice_escolhido = i;
+            break;
+        }
     }
+
+    // 6. Se o processo não existe mais (foi terminado e limpo), ignora
+    if (proc_escolhido == NULL) {
+        continue; // Pega o próximo da fila
+    }
+
+    // 7. VERIFICAÇÃO CRUCIAL
+    if (proc_escolhido->estado == P_PRONTO) {
+        // 8. SIM! Este processo está PRONTO. Escalone-o.
+        console_printf("====> processo %d escolhido \n", escolhido_pid);
+        imprime_fila(self->fila_prontos);
+
+        self->processo_corrente = indice_escolhido;
+        
+        // Usa a sua função de métrica
+        so_muda_estado(self, proc_escolhido, P_EXECUTANDO);
+        
+        return;
+    }
+    
+    // 8. NÃO. Este processo estava na fila, mas está BLOQUEADO
+    //    (devido ao bug de 'desenfileira' não ser chamado antes).
+    //    Apenas ignore-o (ele já foi removido da fila no passo 4).
+    //    O loop 'while' vai pegar o próximo.
   }
+
+  // 9. Se o loop terminou, a fila de prontos está vazia (ou só tinha lixo)
+  self->processo_corrente = NO_PROCESS;
+  return;
 }
 
 // coloca o estado do processo corrente na CPU, para que ela execute
@@ -765,7 +789,8 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
     {
       console_printf("SO: processo %d (que morreu) estava sendo esperado por %d. Acordando.",
       pid_que_morreu, proc->pid);
-      proc->estado = P_PRONTO;
+      //proc->estado = P_PRONTO;
+      so_muda_estado(self, proc, P_PRONTO); // usa a função que contabiliza métricas
       proc->pid_esperando = -1; //nao está mais esperando
       proc->ctx_cpu.regA = 0;   //retorna sucesso para a chamada SO_ESPERA_PROC
       // colocar na fila de prontos
@@ -1119,6 +1144,7 @@ static void so_chamada_cria_proc(so_t *self)
     so_muda_estado(self, novo_processo, P_PRONTO); // substitui novo_processo->estado = P_PRONTO
     // t2: deveria escrever no PC do descritor do processo criado (antes: //self->regPC = ender_carga;)
     novo_processo->ctx_cpu.pc = ender_carga;
+    
     // escrever o PID do processo criado no reg A do processo que pediu a criação
     processo_corrente->ctx_cpu.regA = novo_processo->pid;
     // inserir na fila de processos prontos
@@ -1165,9 +1191,12 @@ static void so_chamada_mata_proc(so_t *self)
   so_muda_estado(self, proc_alvo, P_TERMINOU); // usa a função que contabiliza métricas
   proc_alvo->usando = 0;
   libera_terminal(self, proc_alvo->pid);
-  desenfileira(self->fila_prontos, proc_alvo->pid);
+  //desenfileira(self->fila_prontos, proc_alvo->pid);
+  if (proc_alvo->estado == P_PRONTO) {
+    desenfileira(self->fila_prontos, proc_alvo->pid);
+  }
 
-  // remove da tabela e libera a memória
+  /* // remove da tabela e libera a memória
   for (int i = 0; i < MAX_PROCESSES; i++){
     if (self->tabela_de_processos[i] == proc_alvo){
       //SALVA MÉTRICAS ANTES DO FREE 
@@ -1176,7 +1205,7 @@ static void so_chamada_mata_proc(so_t *self)
       self->tabela_de_processos[i] = NULL;
       break;
     }
-  }
+  } */
 
   // se matou a si mesmo, não há processo corrente
   if (matando_a_si_mesmo){
@@ -1222,6 +1251,7 @@ static void so_chamada_espera_proc(so_t *self)
     so_muda_estado(self, proc_corrente, P_BLOQUEADO); // usa a função que contabiliza métricas
     proc_corrente->pid_esperando = pid_esperado;
     self->processo_corrente = NO_PROCESS;
+    //desenfileira(self->fila_prontos, proc_corrente->pid);
   }
   else
   {
