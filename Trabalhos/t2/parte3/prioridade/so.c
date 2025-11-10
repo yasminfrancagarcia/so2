@@ -548,6 +548,7 @@ static void so_trata_pendencias(so_t *self)
     }
   }
 }
+
 static void so_escalona(so_t *self)
 {
   //limpa processos terminados
@@ -575,54 +576,34 @@ static void so_escalona(so_t *self)
     return; //deixa ele continuar
   }
 
-  //procura por um processo pronto na fila
-  while (!fila_vazia(self->fila_prontos))
-  {
-    //pega o primeiro da fila
-    int escolhido_pid = self->fila_prontos->inicio->pid;
-    desenfileira(self->fila_prontos, escolhido_pid); // remove da fila
-
-    // acha o PCB desse processo
-    pcb *proc_escolhido = NULL;
-    int indice_escolhido = -1;
-    for (int i = 0; i < MAX_PROCESSES; i++)
-    {
-      if (self->tabela_de_processos[i] != NULL &&
-        self->tabela_de_processos[i]->pid == escolhido_pid)
-      {
-        proc_escolhido = self->tabela_de_processos[i];
-        indice_escolhido = i;
+  //procura por um processo pronto na fila, com maior prioridade
+  int idx_escolhido = -1; //INDICE na tabela de processos do processo com maior prioridade
+  float  maior_prioridade = QUANTUM; 
+  pcb* proc_candidato = NULL;
+  while(!fila_vazia(self->fila_prontos)){
+    //acha o índice do processo candidato
+    for (int i = 0; i < MAX_PROCESSES; i++){
+      if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->prioridade < maior_prioridade){
+        idx_escolhido = i;
+        maior_prioridade = self->tabela_de_processos[i]->prioridade;
+        proc_candidato = self->tabela_de_processos[i];
         break;
       }
     }
-
-    // se o processo não existe mais (foi terminado e limpo), ignora
-    if (proc_escolhido == NULL) {
-      continue; // próximo da fila
+    //escolher o processo de maior prioridade
+    if (idx_escolhido != -1 && proc_candidato->estado == P_PRONTO){
+      self->processo_corrente =  idx_escolhido;
+      so_muda_estado(self, proc_candidato, P_EXECUTANDO);
+      
+    }else{
+      //só tem 1 procesos na fila
+      self->processo_corrente =  self->fila_prontos->inicio->pid;
+      //desenfileira(self->fila_prontos, self->processo_corrente);
     }
-
-    if (proc_escolhido->estado == P_PRONTO) {
-        //processo está pronto para rodar, deve ser escolhido
-        console_printf("====> processo %d escolhido \n", escolhido_pid);
-        imprime_fila(self->fila_prontos);
-
-        self->processo_corrente = indice_escolhido;
-        
-        // Usa a sua função de métrica
-        so_muda_estado(self, proc_escolhido, P_EXECUTANDO);
-        
-        return;
-    }
-    
-    // NÃO. Este processo estava na fila, mas está BLOQUEADO
-    //    (devido ao bug de 'desenfileira' não ser chamado antes).
-    //    Apenas ignore-o (ele já foi removido da fila no passo 4).
-    //    O loop 'while' vai pegar o próximo.
   }
+ 
+  
 
-  // se o loop terminou, a fila de prontos está vazia (ou só tinha lixo)
-  self->processo_corrente = NO_PROCESS;
-  return;
 }
 
 // coloca o estado do processo corrente na CPU, para que ela execute
