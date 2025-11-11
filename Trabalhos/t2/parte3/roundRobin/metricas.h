@@ -14,14 +14,12 @@ typedef struct metricas_t {
   metricas_processo_final_t historico_metricas[MAX_PROCESSES];
 } metricas_t;
 
-// --- PROTÓTIPOS DAS FUNÇÕES DE MÉTRICAS ---
-// (Note que elas ainda precisam do so_t* para acessar dados
-//  como a tabela de processos, E/S, etc.)
+// PROTÓTIPOS DAS FUNÇÕES DE MÉTRICAS 
 
-// Precisamos declarar 'so_t' como um tipo incompleto (opaco)
+// so_t como um tipo incompleto (opaco) ?
 struct so_t;
 struct pcb;
-enum estado_processo; // ou inclua o header que define isso
+enum estado_processo;
 
 // Funções de gerenciamento da struct metricas_t
 metricas_t* metricas_cria(void);
