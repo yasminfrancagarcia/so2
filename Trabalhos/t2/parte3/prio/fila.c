@@ -47,7 +47,7 @@ void enfileira(fila* f, int pid) { //cria um nó e insere no final da fila
     f->tamanho++;
 }
 
-int desenfileira(fila* f, int pid) { //remove o nó  especificado pelo pid
+int desenfileira(fila* f, int pid) { //remove o nó do início da fila
     fila_no* atual = f->inicio;
     if (fila_vazia(f)) {
         return -1; // fila vazia, nada a desenfileirar

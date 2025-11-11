@@ -22,8 +22,7 @@ pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida) {
     novo_processo->dispositivo_bloqueado = -1; // Nenhum dispositivo bloqueado inicialmente
     novo_processo->pid_esperando = -1; // Nenhum processo esperando inicialmente
     novo_processo->quantum = QUANTUM; // Inicializa o quantum
-    novo_processo->prioridade = 0.5; // Inicializa a prioridade com 0.5
-
+    novo_processo->prioridade = 0.5; // Inicializa a prioridade
     return novo_processo;
 }
 
@@ -34,7 +33,6 @@ void mata_processo(pcb* processo) {
         free(processo); // Libera a memória alocada
     }
 }
-
 void atualiza_prioridade(pcb * proc){
     // prio = (prio + t_exec/t_quantum) / 2 
     //onde t_exec é o tempo desde que ele foi escolhido para executar e t_quantum é o

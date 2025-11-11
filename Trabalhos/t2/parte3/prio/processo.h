@@ -2,7 +2,8 @@
 #define PROCESSO_H
 
 #define QUANTUM 10
-
+#define MAX_PROCESSES 4
+#define NO_PROCESS -1
 #include <stdio.h>
 
 #include "dispositivos.h"
@@ -58,7 +59,7 @@ typedef struct {
     int tempo_desbloqueou; // Timestamp de quando saiu de BLOQUEADO
     int tempo_total_resposta_pos_bloqueio;// soma dos tempos de resposta pós bloqueio
     int num_respostas_pos_bloqueio; // N. de vezes que foi de BLOQUEADO -> PRONTO 
-    float prioridade; // prioridade do processo
+    float prioridade;
 } pcb;
 
 //a struct que guardará as métricas finais, é um histórico de processos finalizados
