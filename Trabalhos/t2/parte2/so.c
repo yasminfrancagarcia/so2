@@ -779,7 +779,7 @@ static void so_chamada_espera_proc(so_t *self)
   if(proc_esperado->estado != P_TERMINOU){
     proc_corrente->estado = P_BLOQUEADO;
     proc_corrente->pid_esperando = pid_esperado;
-    //self->processo_corrente = NO_PROCESS; // Força escalonamento
+    self->processo_corrente = NO_PROCESS; // Força escalonamento
   }
 
   
