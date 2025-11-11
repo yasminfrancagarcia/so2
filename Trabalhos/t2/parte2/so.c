@@ -158,25 +158,24 @@ static void so_salva_estado_da_cpu(so_t *self)
   }
 }
 
+// so.c (so_trata_pendencias - A PARTIR DA LINHA ~140)
+
 static void so_trata_pendencias(so_t *self)
-{// t2: realiza ações que não são diretamente ligadas com a interrupção que
-  //   está sendo atendida:
-  // - E/S pendente
-  // - desbloqueio de processos
-  // - contabilidades
-  // - etc
-  //na função que trata de pendências, o SO deve verificar o estado dos dispositivos
-   //que causaram bloqueio e realizar operações pendentes e desbloquear processos se for o caso
-   // ver os dispsitivos que podem estar bloqueados, itera por todos os processos
+{
   for (int i = 0; i < MAX_PROCESSES; i++) {
     pcb* proc = self->tabela_de_processos[i];
+    
     //só importa os processos bloqueados por E/S
     if (proc == NULL || proc->estado != P_BLOQUEADO || proc->dispositivo_bloqueado == -1) {
+      // Também verifica se o bloqueio é por E/S e não por espera de processo (pid_esperando)
+      if (proc != NULL && proc->pid_esperando != -1) continue; 
+      
       continue; 
     }
-    //processo [i] está bloqueado em um dispositivo, checar
+    
+    // checar o estado do dispositivo
     dispositivo_id_t disp = proc->dispositivo_bloqueado;
-    dispositivo_id_t disp_ok = disp + 1;
+    dispositivo_id_t disp_ok = disp + 1; //dispositivo de status (OK)
     int estado;
     if (es_le(self->es, disp_ok, &estado) != ERR_OK) {
       console_printf("SO: erro ao checar E/S pendente para pid %d", proc->pid);
@@ -187,18 +186,17 @@ static void so_trata_pendencias(so_t *self)
     if (estado != 0) {
       //dispositivo está PRONTO
       console_printf("SO: E/S pronta para pid %d (disp %d), desbloqueando.", proc->pid, disp);
-      
-      //realiza a operação pendente
-      if (disp % 2 == 0) { //dispositivo de LEITURA (teclado)
+      //operações pendentes 
+      if (disp % 4 == 0) { //dispositivo de LEITURA (Teclado - D_TERM_X_TECLADO)
         int dado;
         if (es_le(self->es, disp, &dado) != ERR_OK) {
            console_printf("SO: erro ao completar leitura pendente para pid %d", proc->pid);
-           proc->ctx_cpu.regA = -1; // Sinaliza erro no processo
+           proc->ctx_cpu.regA = -1; // sinaliza erro no processo
         } else {
-           proc->ctx_cpu.regA = dado; //Coloca o dado no regA
+           proc->ctx_cpu.regA = dado; //coloca o dado no regA
         }
-      } else { // Dispositivo de ESCRITA (tela)
-        int dado = proc->ctx_cpu.regX; 
+      } else if (disp % 4 == 2) { // Dispositivo de ESCRITA (Tela - D_TERM_X_TELA)
+        int dado = proc->ctx_cpu.regX; // PEGA O DADO SALVO NO REGX DA PCB
         if (es_escreve(self->es, disp, dado) != ERR_OK) {
           console_printf("SO: erro ao completar escrita pendente for pid %d", proc->pid);
           proc->ctx_cpu.regA = -1;
@@ -212,7 +210,6 @@ static void so_trata_pendencias(so_t *self)
       proc->dispositivo_bloqueado = -1; //marca que não está mais esperando E/S
     }
   }
-
 }
 
 
@@ -476,7 +473,10 @@ static void so_trata_irq_chamada_sistema(so_t *self)
 {
   // a identificação da chamada está no registrador A
   // t2: com processos, o reg A deve estar no descritor do processo corrente
-  int id_chamada = self->regA;
+  //int id_chamada = self->regA;
+  // so.c (so_trata_irq_chamada_sistema - CORREÇÃO)
+  pcb *proc = self->tabela_de_processos[self->processo_corrente];
+  int id_chamada = proc->ctx_cpu.regA;
   console_printf("SO: chamada de sistema %d", id_chamada);
   switch (id_chamada) {
     case SO_LE:

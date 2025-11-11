@@ -87,7 +87,7 @@ typedef struct {
 pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida);
 
 void mata_processo(pcb* processo);
-
+void atualiza_prioridade(pcb * proc);
 
 #endif
 

@@ -34,3 +34,11 @@ void mata_processo(pcb* processo) {
         free(processo); // Libera a memória alocada
     }
 }
+
+void atualiza_prioridade(pcb * proc){
+    // prio = (prio + t_exec/t_quantum) / 2 
+    //onde t_exec é o tempo desde que ele foi escolhido para executar e t_quantum é o
+    // tempo do quantum. O t_exec é o quantum menos o valor da variável que o 
+    //escalonador decrementa a cada interrupção. 
+    proc->prioridade = (proc->prioridade + proc->quantum/ QUANTUM) / 2.0;
+}

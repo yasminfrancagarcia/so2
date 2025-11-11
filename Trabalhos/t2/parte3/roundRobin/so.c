@@ -491,10 +491,12 @@ static void so_trata_pendencias(so_t *self)
   for (int i = 0; i < MAX_PROCESSES; i++)
   {
     pcb *proc = self->tabela_de_processos[i];
-    // só importa os processos bloqueados por E/S
-    if (proc == NULL || proc->estado != P_BLOQUEADO || proc->dispositivo_bloqueado == -1)
-    {
-      continue;
+    //só importa os processos bloqueados por E/S
+    if (proc == NULL || proc->estado != P_BLOQUEADO || proc->dispositivo_bloqueado == -1) {
+      // Também verifica se o bloqueio é por E/S e não por espera de processo (pid_esperando)
+      if (proc != NULL && proc->pid_esperando != -1) continue; 
+      
+      continue; 
     }
     // processo [i] está bloqueado em um dispositivo, checar
     dispositivo_id_t disp = proc->dispositivo_bloqueado;
@@ -513,7 +515,7 @@ static void so_trata_pendencias(so_t *self)
       console_printf("SO: E/S pronta para pid %d (disp %d), desbloqueando.", proc->pid, disp);
 
       // realiza a operação pendente
-      if (disp % 2 == 0)
+      if (disp % 4 == 0)
       { // dispositivo de LEITURA (teclado)
         int dado;
         if (es_le(self->es, disp, &dado) != ERR_OK)
@@ -526,12 +528,12 @@ static void so_trata_pendencias(so_t *self)
           proc->ctx_cpu.regA = dado; // Coloca o dado no regA
         }
       }
-      else
+      else if (disp % 4 == 2)
       { // Dispositivo de ESCRITA (tela)
         int dado = proc->ctx_cpu.regX;
         if (es_escreve(self->es, disp, dado) != ERR_OK)
         {
-          console_printf("SO: erro ao completar escrita pendente for pid %d", proc->pid);
+          console_printf("SO: erro ao completar escrita pendente para pid %d", proc->pid);
           proc->ctx_cpu.regA = -1;
         }
         else
@@ -608,7 +610,7 @@ static void so_escalona(so_t *self)
 
         self->processo_corrente = indice_escolhido;
         
-        // Usa a sua função de métrica
+        // usa a função de métrica
         so_muda_estado(self, proc_escolhido, P_EXECUTANDO);
         
         return;
@@ -616,7 +618,7 @@ static void so_escalona(so_t *self)
     
     // NÃO. Este processo estava na fila, mas está BLOQUEADO
     //    (devido ao bug de 'desenfileira' não ser chamado antes).
-    //    Apenas ignore-o (ele já foi removido da fila no passo 4).
+    //    Apenas ignore-o (ele já foi removido da fila ).
     //    O loop 'while' vai pegar o próximo.
   }
 
@@ -748,6 +750,7 @@ static void so_trata_reset(so_t *self)
   }
   // coloca o endereço do programa init np primeiro processo
   pcb *processo_inicial = criar_processo(ender, D_TERM_A_TECLADO, D_TERM_A_TELA);
+  console_printf("SO: processo inicial criado com PID %d ", processo_inicial->pid);
   // marcar o terminal usado
   self->terminais_usados[0] = processo_inicial->pid;
   self->tabela_de_processos[0] = processo_inicial;
@@ -756,9 +759,9 @@ static void so_trata_reset(so_t *self)
   // altera o PC para o endereço de carga
   // self->regPC = ender; // deveria ser no processo
   processo_inicial->ctx_cpu.pc = ender;
-  processo_inicial->ctx_cpu.regA = 0; // <-- ESSENCIAL
-  processo_inicial->ctx_cpu.regX = 0; // <-- ESSENCIAL
-  processo_inicial->ctx_cpu.erro = 0; // <-- ESSENCIAL
+  processo_inicial->ctx_cpu.regA = 0; 
+  processo_inicial->ctx_cpu.regX = 0; 
+  processo_inicial->ctx_cpu.erro = 0; 
 
   //self->regPC = processo_inicial->ctx_cpu.pc;
   // Inicializa campos de bloqueio
@@ -884,7 +887,9 @@ static void so_trata_irq_chamada_sistema(so_t *self)
 {
   // a identificação da chamada está no registrador A
   // t2: com processos, o reg A deve estar no descritor do processo corrente
-  int id_chamada = self->regA;
+  //int id_chamada = self->regA;
+  pcb *proc = self->tabela_de_processos[self->processo_corrente];
+  int id_chamada = proc->ctx_cpu.regA;
   console_printf("SO: chamada de sistema %d", id_chamada);
   switch (id_chamada)
   {

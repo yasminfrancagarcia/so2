@@ -577,33 +577,42 @@ static void so_escalona(so_t *self)
   }
 
   //procura por um processo pronto na fila, com maior prioridade
-  int idx_escolhido = -1; //INDICE na tabela de processos do processo com maior prioridade
+  int idx_escolhido = NO_PROCESS; //-1 //INDICE na tabela de processos do processo com maior prioridade
   float  maior_prioridade = QUANTUM; 
-  pcb* proc_candidato = NULL;
+  pcb* proc_escolhido = NULL;
   while(!fila_vazia(self->fila_prontos)){
     //acha o índice do processo candidato
     for (int i = 0; i < MAX_PROCESSES; i++){
       if (self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->prioridade < maior_prioridade){
         idx_escolhido = i;
         maior_prioridade = self->tabela_de_processos[i]->prioridade;
-        proc_candidato = self->tabela_de_processos[i];
+        proc_escolhido = self->tabela_de_processos[i];
         break;
       }
     }
+    // se o processo não existe mais (foi terminado e limpo), ignora
+    if (proc_escolhido == NULL) {
+      continue; // próximo da fila
+    }
     //escolher o processo de maior prioridade
-    if (idx_escolhido != -1 && proc_candidato->estado == P_PRONTO){
+    if (idx_escolhido != NO_PROCESS && proc_escolhido->estado == P_PRONTO){
+      //processo está pronto para rodar, deve ser escolhido
       self->processo_corrente =  idx_escolhido;
-      so_muda_estado(self, proc_candidato, P_EXECUTANDO);
+      desenfileira(self->fila_prontos, self->processo_corrente);
+      so_muda_estado(self, proc_escolhido, P_EXECUTANDO);
+      console_printf("====> processo %d escolhido \n", proc_escolhido->pid);
+      imprime_fila(self->fila_prontos);
+      return;
       
-    }else{
+    }/* else{
       //só tem 1 procesos na fila
       self->processo_corrente =  self->fila_prontos->inicio->pid;
       //desenfileira(self->fila_prontos, self->processo_corrente);
-    }
+    } */
+    // se o loop terminou, a fila de prontos está vazia (ou só tinha lixo)
+    self->processo_corrente = NO_PROCESS;
+    return;
   }
- 
-  
-
 }
 
 // coloca o estado do processo corrente na CPU, para que ela execute
@@ -837,6 +846,7 @@ static void so_trata_irq_relogio(so_t *self)
     //proc_corrente->estado = P_PRONTO;
     so_muda_estado(self, proc_corrente, P_PRONTO); // usa a função que contabiliza métricas
     proc_corrente->quantum = QUANTUM; // reseta o quantum
+    atualiza_prioridade(proc_corrente); // atualiza a prioridade do processo
     self->processo_corrente = NO_PROCESS; // força o escalonador a escolher outro processo
     enfileira(self->fila_prontos, proc_corrente->pid);
   }
@@ -946,14 +956,9 @@ static void so_chamada_le(so_t *self)
     proc->dispositivo_bloqueado = entrada; // salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS;  // força o escalonador a rodar
     //desenfileira(self->fila_prontos, proc->pid);    // retira o processo corrente da fila de prontos
+    atualiza_prioridade(proc); // atualiza a prioridade do processo corrente, que vai ser bloqueado
   }
-  // escreve no reg A do processador
-  // (na verdade, na posição onde o processador vai pegar o A quando retornar da int)
-  // t2: se houvesse processo, deveria escrever no reg A do processo
-  // t2: o acesso só deve ser feito nesse momento se for possível; se não, o processo
-  //   é bloqueado, e o acesso só deve ser feito mais tarde (e o processo desbloqueado)
-  /* self->regA = dado;
-  self->tabela_de_processos[self->processo_corrente]->ctx_cpu.regA = dado; */
+ 
 }
 
 // implementação da chamada se sistema SO_ESCR
@@ -1009,6 +1014,7 @@ static void so_chamada_escr(so_t *self)
     proc->dispositivo_bloqueado = saida;  // Salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS; // Força o escalonador a rodar
     //desenfileira(self->fila_prontos, proc->pid);    // retira o processo corrente da fila de prontos
+    atualiza_prioridade(proc); // atualiza a prioridade do processo corrente, que vai ser bloqueado
   }
 }
 // retorna o índice do primeiro terminal livre ou -1 se todos estiverem ocupados
@@ -1230,6 +1236,7 @@ static void so_chamada_espera_proc(so_t *self)
     console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
     //proc_corrente->estado = P_BLOQUEADO;
     so_muda_estado(self, proc_corrente, P_BLOQUEADO); // usa a função que contabiliza métricas
+    atualiza_prioridade(proc_corrente); // atualiza a prioridade do processo corrente, que vai ser bloqueado
     proc_corrente->pid_esperando = pid_esperado;
     self->processo_corrente = NO_PROCESS;
     //desenfileira(self->fila_prontos, proc_corrente->pid);
