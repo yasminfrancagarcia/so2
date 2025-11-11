@@ -12,6 +12,7 @@
 #include "programa.h"
 #include "processo.h"
 #include "fila.h"
+#include "metricas.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -26,8 +27,8 @@
 #define TERMINAIS 4
 
 // constantes de processos
-#define MAX_PROCESSES 4
-#define NO_PROCESS -1
+//#define MAX_PROCESSES 4
+//#define NO_PROCESS -1
 
 //métricas
 /* 1- número de processos criados
@@ -53,14 +54,15 @@ struct so_t
   int terminais_usados[4];
   fila *fila_prontos;   // fila de processos prontos
   //métricas
-  int num_proc_criados; // 1- número de processos ativos (métrica 2 nao precisa ser guardada aqui)
+  /* int num_proc_criados; // 1- número de processos ativos (métrica 2 nao precisa ser guardada aqui)
   int tempo_ocioso;    // 3- tempo total em que o sistema ficou ocioso
   int contagem_irq[N_IRQ]; // 4- número de interrupções recebidas de cada tipo
   int num_preemcoes_total;      // 5- número de preempções
   //auxiliar metricas 3 e 9
   int tempo_ultima_atualizacao_metricas; // Timestamp da última atualização de métricas
   //Novo Campo para Histórico, guardará as métricas de TODOS os processos que já existiram
-  metricas_processo_final_t historico_metricas[MAX_PROCESSES];
+  metricas_processo_final_t historico_metricas[MAX_PROCESSES]; */
+  metricas_t *metricas;
 };
 
 // função de tratamento de interrupção (entrada no SO)
@@ -94,317 +96,37 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console)
   //   so_trata_interrupcao, com primeiro argumento um ptr para o SO
   cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
   self->fila_prontos = cria_fila();
-  self->num_proc_criados = 0;
+  
   // inicializar terminais
   for (int i = 0; i < TERMINAIS; i++)
   {
     self->terminais_usados[i] = 0; // nenhum terminal está sendo usado
   }
-  // inicializar histórico de métricas
-  for (int i = 0; i < MAX_PROCESSES; i++)
-  {
-    self->historico_metricas[i].utilizado = false; //nenhum slot usado ainda
-    self->historico_metricas[i].pid = -1; //nenhum pid ainda 
-  }
-  //inicialização das mtricas 
-  self->tempo_ocioso = 0;
-  self->num_preemcoes_total = 0;
-  self->tempo_ultima_atualizacao_metricas = 0; // Tempo inicial é 0
+  self->metricas = metricas_cria();
   return self;
 }
 
 void so_destroi(so_t *self)
 {
   cpu_define_chamaC(self->cpu, NULL, NULL);
+  metricas_destroi(self->metricas);
   free(self);
 }
 
 // ---------------------------------------------------------------------
 // FUNÇÕES PARA AS MÉTRICAS
 // ---------------------------------------------------------------------
-
-/**
- * Retorna o tempo total de ciclos/instruções executadas no sistema.
- * Faz isso lendo o registrador 0 (D_RELOGIO_INSTRUCOES) do dispositivo de relógio.
- */
-static int so_tempo_total(so_t *self)
-{
-    int tempo_atual;
-
-    // Esta é a constante correta
-    if (es_le(self->es, D_RELOGIO_INSTRUCOES, &tempo_atual) != ERR_OK) {
-        console_printf("SO: ERRO FATAL AO LER O RELOGIO (INSTRUCOES)!");
-        self->erro_interno = true;
-        return 0; // Retorna 0 em caso de erro
-    }
-    
-    return tempo_atual;
+metricas_t* so_get_metricas(so_t *self) {
+  return self->metricas;
 }
-//função auxiliar para inicializar métricas da pcb
-static void inicializa_metricas_pcb(pcb *proc, int tempo_atual)
-{
-  // métricas 6, 7, 8, 9, 10
-  proc->tempo_criacao = tempo_atual;
-  proc->tempo_termino = -1;
-  proc->num_preempcoes_proc = 0;
-  proc->tempo_desbloqueou = -1;
-  proc->tempo_total_resposta_pos_bloqueio = 0;
-  proc->num_respostas_pos_bloqueio = 0;
-  proc->tempo_ultima_mudanca_estado = tempo_atual;
-
-  for (int i = 0; i < P_N_ESTADOS; i++)
-  {
-    proc->contagem_estados[i] = 0;
-    proc->tempo_em_estado[i] = 0;
-  }
+es_t* so_get_es(so_t *self) {
+  return self->es;
 }
-//Função para centralizar a mudança de estado e contabilizar (Métricas 8 e 9)
-static void so_muda_estado(so_t *self, pcb *proc, estado_processo novo_estado)
-{
-  if (proc == NULL || proc->estado == novo_estado)
-    return;
-
-  int tempo_atual = so_tempo_total(self);
-  // contabiliza tempo gasto no estado anterior
-  int delta_t = tempo_atual - proc->tempo_ultima_mudanca_estado;
-  proc->tempo_em_estado[proc->estado] += delta_t; // metríca 9
-  // atualiza para o novo estado
-  proc->estado = novo_estado;
-  proc->contagem_estados[novo_estado]++; // metríca 8
-  proc->tempo_ultima_mudanca_estado = tempo_atual;
-
-  //lógica específica para Métrica 10 (tempo de Resposta)
-  if (novo_estado == P_PRONTO && proc->dispositivo_bloqueado != -1)
-  {
-    //acabou de ser desbloqueado (vinha de P_BLOQUEADO)
-    proc->tempo_desbloqueou = tempo_atual;
-    proc->num_respostas_pos_bloqueio++;
-  }
-  else if (novo_estado == P_EXECUTANDO && proc->tempo_desbloqueou != -1)
-  {
-    //foi escalonado após um desbloqueio
-    int tempo_espera = tempo_atual - proc->tempo_desbloqueou; //tempo de espera entre desbloqueio e escalonamento
-    proc->tempo_total_resposta_pos_bloqueio += tempo_espera;
-    proc->tempo_desbloqueou = -1; // Reseta flag
-  }
+pcb** so_get_tabela_de_processos(so_t *self) {
+  return self->tabela_de_processos;
 }
-
-//atualiza o tempo ocioso e o tempo em estado dos processos (Métricas 3 e 9)
-//deve ser chamada NO INICIO de so trata interrupcao
-static void so_atualiza_tempos(so_t *self)
-{
-  int tempo_atual = so_tempo_total(self);
-  int delta_t = tempo_atual - self->tempo_ultima_atualizacao_metricas;
-
-  if (delta_t == 0)
-    return;
-
-  if (self->processo_corrente == NO_PROCESS){
-    // METRICA 3: Sistema estava ocioso
-    self->tempo_ocioso += delta_t;
-  }
-  else{
-    // metrica 9: Atualiza tempo do processo que estava executando
-    pcb *proc = self->tabela_de_processos[self->processo_corrente];
-    if (proc != NULL && proc->estado == P_EXECUTANDO){
-      proc->tempo_em_estado[P_EXECUTANDO] += delta_t;
-      proc->tempo_ultima_mudanca_estado = tempo_atual;
-    }
-  }
-
-  // Métrica 9: Atualiza tempo de processos prontos ou bloqueados
-  for (int i = 0; i < MAX_PROCESSES; i++){
-    pcb *p = self->tabela_de_processos[i];
-    if (p != NULL && i != self->processo_corrente){
-      if (p->estado == P_PRONTO || p->estado == P_BLOQUEADO){
-        p->tempo_em_estado[p->estado] += delta_t;
-        p->tempo_ultima_mudanca_estado = tempo_atual;
-      }
-    }
-  }
-
-  self->tempo_ultima_atualizacao_metricas = tempo_atual;
-}
-//função chamada IMEDIATAMENTE ANTES de dar free() em um PCB, para salvar as métricas finais
-// no histórico, salcva as métricas do processo que está sendo finalizado
-static void so_salva_metricas_finais(so_t *self, pcb *proc)
-{
-  if (proc == NULL)
-    return;
-  // acha um slot no histórico.
-  // usaremos o (pid - 1) como índice (assume que PID começa em 1)
-  int idx = proc->pid - 1;
-
-  if (idx < 0 || idx >= MAX_PROCESSES)
-  {
-    console_printf("SO: ERRO DE MÉTRICA: PID %d fora do limite do histórico!", proc->pid);
-    return;
-  }
-
-  //atualiza o tempo final no estado TERMINOU
-  int tempo_atual = so_tempo_total(self);
-  if (proc->tempo_termino == -1)
-  { //garante que o tempo de término foi setado
-    proc->tempo_termino = tempo_atual;
-  }
-
-  //contabiliza o último delta de tempo
-  int delta_t = proc->tempo_termino - proc->tempo_ultima_mudanca_estado;
-  proc->tempo_em_estado[proc->estado] += delta_t;
-
-  // Copia os dados para o histórico
-  metricas_processo_final_t *m = &self->historico_metricas[idx];
-
-  m->utilizado = true;
-  m->pid = proc->pid;
-  m->tempo_criacao = proc->tempo_criacao;
-  m->tempo_termino = proc->tempo_termino;
-  m->num_preempcoes_proc = proc->num_preempcoes_proc;
-  m->tempo_total_resposta_pos_bloqueio = proc->tempo_total_resposta_pos_bloqueio;
-  m->num_respostas_pos_bloqueio = proc->num_respostas_pos_bloqueio;
-
-  for (int i = 0; i < P_N_ESTADOS; i++)
-  {
-    m->contagem_estados[i] = proc->contagem_estados[i];
-    m->tempo_em_estado[i] = proc->tempo_em_estado[i];
-  }
-
-  console_printf("SO: Métricas finais do PID %d salvas no histórico.", proc->pid);
-}
-
-const char *estado_nome(estado_processo estado)
-{
-  switch (estado){
-  case P_PRONTO:
-    return "Pronto";
-  case P_EXECUTANDO:
-    return "Executando";
-  case P_BLOQUEADO:
-    return "Bloqueado";
-  case P_TERMINOU:
-    return "Terminou";
-  default:
-    return "Desconhecido";
-  }
-}
-
-void imprimir_dados(so_t *self)
-{
-  // Atualiza uma última vez os tempos antes de imprimir
-  so_atualiza_tempos(self);
-  // garante que o tempo do último processo a terminar seja contabilizado
-  for (int i = 0; i < MAX_PROCESSES; i++)
-  {
-    pcb *p = self->tabela_de_processos[i];
-    if (p != NULL && p->estado != P_TERMINOU)
-    {
-      int tempo_atual = so_tempo_total(self);
-      int delta_t = tempo_atual - p->tempo_ultima_mudanca_estado;
-      p->tempo_em_estado[p->estado] += delta_t;
-    }
-  }
-
-  console_printf("\nMÉTRICAS GLOBAIS DO SISTEMA ");
-
-  // Métrica 1: Número de processos criados
-  console_printf("1. Número total de processos criados: %d", self->num_proc_criados);
-
-  // Métrica 2: Tempo total de execução
-  int tempo_total = so_tempo_total(self);
-  console_printf("2. Tempo total de execução do sistema: %d ciclos", tempo_total);
-
-  // Métrica 3: Tempo total ocioso
-  console_printf("3. Tempo total em que o sistema ficou ocioso: %d ciclos (%.2f%%)",
-  self->tempo_ocioso,
-  tempo_total > 0 ? (double)self->tempo_ocioso / tempo_total * 100.0 : 0.0);
-
-  // Métrica 4: Número de interrupções por tipo
-  console_printf("4. Número de interrupções recebidas:");
-  for (int i = 0; i < N_IRQ; i++)
-  {
-    if (self->contagem_irq[i] > 0)
-    {
-      console_printf("   - IRQ %d (%s): %d", i, irq_nome(i), self->contagem_irq[i]);
-    }
-  }
-
-  // Métrica 5: Número de preempções
-  console_printf("5. Número total de preempções (troca por quantum): %d", self->num_preemcoes_total );
-
-  console_printf("\n--- MÉTRICAS POR PROCESSO ---");
-  // Antes de imprimir, faz uma última varredura na tabela de processos
-  // para salvar as métricas de quem ainda não foi liberado (ex: o próprio init
-  // ou outros processos que sobraram)
-  int tempo_final = so_tempo_total(self);
-  for (int i = 0; i < MAX_PROCESSES; i++)
-  {
-    pcb *p = self->tabela_de_processos[i];
-    if (p != NULL)
-    {
-      //se o processo estava rodando ou pronto, seu "término" é agora
-      if (p->estado != P_TERMINOU)
-      {
-        so_muda_estado(self, p, P_TERMINOU); //mude para terminado
-        p->tempo_termino = tempo_final;      // setar o tempo final
-      }
-      //salva as métricas de quem sobrou
-      so_salva_metricas_finais(self, p);
-    }
-  }
-
-  // imprime TUDO o que está no histórico
-  // self->num_proc_criados tem o número total de processos que já existiram
-  for (int i = 0; i < self->num_proc_criados; i++){
-    //pega a métrica salva do histórico (índice i == pid i+1)
-    metricas_processo_final_t *p = &self->historico_metricas[i];
-
-    // Verifica se há dados (se o pid foi salvo)
-    if (!p->utilizado)
-      continue;
-
-    console_printf("\n>> Processo PID: %d", p->pid);
-
-    //métrica 6: Tempo de retorno
-    if (p->tempo_termino != -1)
-    {
-      int turnaround = p->tempo_termino - p->tempo_criacao;
-      console_printf("6. Tempo de Retorno (Turnaround): %d ciclos (Criado: %d, Terminado: %d)",
-      turnaround, p->tempo_criacao, p->tempo_termino);
-    }
-    else
-    {
-      console_printf("6. Tempo de Retorno: Processo NÃO terminou (Criado: %d)", p->tempo_criacao);
-    }
-
-    // Métrica 7: Preempções
-    console_printf("7. Número de preempções sofridas: %d", p->num_preempcoes_proc);
-
-    // Métrica 8: Vezes em cada estado
-    console_printf("8. Entradas em cada estado:");
-    for (int j = 0; j < P_N_ESTADOS; j++)
-    {
-      console_printf("   - %s: %d vez(es)", estado_nome(j), p->contagem_estados[j]);
-    }
-
-    // Métrica 9: Tempo em cada estado
-    console_printf("9. Tempo total em cada estado:");
-    for (int j = 0; j < P_N_ESTADOS; j++)
-    {
-      console_printf("   - %s: %d ciclos", estado_nome(j), p->tempo_em_estado[j]);
-    }
-
-    // Métrica 10: Tempo médio de resposta
-    if (p->num_respostas_pos_bloqueio > 0)
-    {
-      double tempo_medio_resp = (double)p->tempo_total_resposta_pos_bloqueio / p->num_respostas_pos_bloqueio;
-      console_printf("10. Tempo médio de resposta (pós-bloqueio): %.2f ciclos (Total: %d / %d eventos)",
-      tempo_medio_resp, p->tempo_total_resposta_pos_bloqueio, p->num_respostas_pos_bloqueio);
-    }
-    else
-    {
-      console_printf("10. Tempo médio de resposta (pós-bloqueio): N/A (nunca foi desbloqueado)");
-    }
-  }
+int so_get_processo_corrente(so_t *self) {
+  return self->processo_corrente;
 }
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
@@ -669,7 +391,7 @@ static void so_trata_irq(so_t *self, int irq)
 {
   //metrica 4: Contagem de Interrupções
   if (irq >= 0 && irq < N_IRQ){
-    self->contagem_irq[irq]++;
+    self->metricas->contagem_irq[irq]++;
   }
   // verifica o tipo de interrupção que está acontecendo, e atende de acordo
   switch (irq)
@@ -774,7 +496,7 @@ static void so_trata_reset(so_t *self)
   so_muda_estado(self, processo_inicial, P_PRONTO); //substitui processo_inicial->estado = P_PRONTO
   // coloca init na fila de prontos
   enfileira(self->fila_prontos, processo_inicial->pid);
-  self->num_proc_criados++;
+  self->metricas->num_proc_criados++;
 }
 
 //acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
@@ -854,7 +576,7 @@ static void so_trata_irq_relogio(so_t *self)
     console_printf("SO: quantum do processo %d expirou, forçando troca de contexto.", proc_corrente->pid);
     // --- Métricas 5 e 7 ---
     proc_corrente->num_preempcoes_proc++;
-    self->num_preemcoes_total++;
+    self->metricas->num_preemcoes_total++;
     // --- Fim Métricas ---
     //proc_corrente->estado = P_PRONTO;
     so_muda_estado(self, proc_corrente, P_PRONTO); // usa a função que contabiliza métricas
@@ -1154,7 +876,7 @@ static void so_chamada_cria_proc(so_t *self)
     processo_corrente->ctx_cpu.regA = novo_processo->pid;
     // inserir na fila de processos prontos
     enfileira(self->fila_prontos, novo_processo->pid);
-    self->num_proc_criados++;
+    self->metricas->num_proc_criados++;
 
     return;
   }

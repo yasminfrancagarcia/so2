@@ -748,7 +748,7 @@ static void so_chamada_mata_proc(so_t *self)
         }
     }
 
-    // se matou a si mesmo, não há processo corrente
+    // se matou a si mesmo, não há processo corrent
     if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid) {
         self->processo_corrente = NO_PROCESS;
     }

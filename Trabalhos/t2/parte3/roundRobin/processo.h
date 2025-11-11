@@ -2,7 +2,8 @@
 #define PROCESSO_H
 
 #define QUANTUM 10
-
+#define MAX_PROCESSES 4
+#define NO_PROCESS -1
 #include <stdio.h>
 
 #include "dispositivos.h"
