@@ -12,12 +12,16 @@ typedef struct so_t so_t;
 #include "cpu.h"
 #include "es.h"
 #include "console.h" // só para uma gambiarra
-
+#include "metricas.h" // para metricas_t'
+#include "processo.h" // para 'pcb'
 
 
 so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console);
 void so_destroi(so_t *self);
-
+metricas_t* so_get_metricas(so_t *self);
+es_t* so_get_es(so_t *self);
+pcb** so_get_tabela_de_processos(so_t *self);
+int so_get_processo_corrente(so_t *self);
 
 // Chamadas de sistema
 // Uma chamada de sistema é realizada colocando a identificação da

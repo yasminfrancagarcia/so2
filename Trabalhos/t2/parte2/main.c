@@ -133,7 +133,7 @@ int main()
 
   // executa o laço principal do controlador
   controle_laco(hw.controle);
-
+  imprimir_dados(so);
   // destroi tudo
   so_destroi(so);
   destroi_hardware(&hw);

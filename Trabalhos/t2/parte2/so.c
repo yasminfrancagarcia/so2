@@ -10,7 +10,7 @@
 #include "memoria.h"
 #include "programa.h"
 #include "processo.h"
-
+#include "metricas.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -25,8 +25,8 @@
 #define TERMINAIS 4
 
 //constantes de processos
-#define MAX_PROCESSES 4
-#define NO_PROCESS -1
+//#define MAX_PROCESSES 4
+//#define NO_PROCESS -1
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -42,6 +42,7 @@ struct so_t {
   //idx = 0 -> terminal A
   //idx = 1 -> terminal B...
   int terminais_usados[4];
+  metricas_t *metricas;
 };
 
 
@@ -79,16 +80,36 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console)
   for(int i = 0; i < TERMINAIS; i++) {
       self->terminais_usados[i] = 0; // nenhum terminal está sendo usado
   }
+  self->metricas = metricas_cria();
+  if (self->metricas == NULL) {
+      free(self);
+      return NULL;
+  }
   return self;
 }
 
 void so_destroi(so_t *self)
 {
   cpu_define_chamaC(self->cpu, NULL, NULL);
+  metricas_destroi(self->metricas);
   free(self);
 }
 
-
+// ---------------------------------------------------------------------
+// FUNÇÕES PARA AS MÉTRICAS (GETTERS)
+// ---------------------------------------------------------------------
+metricas_t* so_get_metricas(so_t *self) {
+  return self->metricas;
+}
+es_t* so_get_es(so_t *self) {
+  return self->es;
+}
+pcb** so_get_tabela_de_processos(so_t *self) {
+  return self->tabela_de_processos;
+}
+int so_get_processo_corrente(so_t *self) {
+  return self->processo_corrente;
+}
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
 // ---------------------------------------------------------------------
@@ -118,6 +139,7 @@ static int so_trata_interrupcao(void *argC, int reg_A)
 {
   so_t *self = argC;
   irq_t irq = reg_A;
+  so_atualiza_tempos(self);
   // esse print polui bastante, recomendo tirar quando estiver com mais confiança
   console_printf("SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
   // salva o estado da cpu no descritor do processo que foi interrompido
@@ -206,7 +228,8 @@ static void so_trata_pendencias(so_t *self)
       }
       
       // Desbloqueia o processo
-      proc->estado = P_PRONTO;
+      //proc->estado = P_PRONTO;
+      so_muda_estado(self, proc, P_PRONTO);
       proc->dispositivo_bloqueado = -1; //marca que não está mais esperando E/S
     }
   }
@@ -226,6 +249,9 @@ static void so_escalona(so_t *self)
     if (self->tabela_de_processos[i] != NULL &&
       self->tabela_de_processos[i]->estado == P_TERMINOU) {
       libera_terminal(self, self->tabela_de_processos[i]->pid);
+      so_salva_metricas_finais(self, self->tabela_de_processos[i]); // <-- ADICIONE ISSO (ANTES DO FREE)
+
+      
       free(self->tabela_de_processos[i]);
       self->tabela_de_processos[i] = NULL;
     }
@@ -242,7 +268,8 @@ static void so_escalona(so_t *self)
     if(self->tabela_de_processos[i] != NULL && self->tabela_de_processos[i]->estado == P_PRONTO){
       //encontrou um processo pronto
       self->processo_corrente = i;
-      self->tabela_de_processos[i]->estado = P_EXECUTANDO;
+      //self->tabela_de_processos[i]->estado = P_EXECUTANDO;
+      so_muda_estado(self, self->tabela_de_processos[i], P_EXECUTANDO);
       return;
     }
     
@@ -289,6 +316,9 @@ static void so_trata_irq_desconhecida(so_t *self, int irq);
 static void so_trata_irq(so_t *self, int irq)
 {
   // verifica o tipo de interrupção que está acontecendo, e atende de acordo
+  if (irq >= 0 && irq < N_IRQ){
+    self->metricas->contagem_irq[irq]++;
+  }
   switch (irq) {
     case IRQ_RESET:
       so_trata_reset(self);
@@ -379,8 +409,14 @@ static void so_trata_reset(so_t *self)
   // Inicializa campos de bloqueio
   processo_inicial->dispositivo_bloqueado = -1;
   processo_inicial->pid_esperando = -1;
-  processo_inicial->estado = P_EXECUTANDO;
-  
+  //processo_inicial->estado = P_EXECUTANDO;
+  int tempo_atual = so_tempo_total(self); // Vai retornar 0
+  inicializa_metricas_pcb(processo_inicial, tempo_atual);
+
+  // processo_inicial->estado = P_EXECUTANDO; // <-- SUBSTITUA ISSO
+  so_muda_estado(self, processo_inicial, P_EXECUTANDO); // <-- POR ISSO
+
+  self->metricas->num_proc_criados++;
 }
 
 //acorda qualquer processo que estava bloqueado esperando 'pid_que_morreu'
@@ -421,7 +457,8 @@ static void so_trata_irq_err_cpu(so_t *self)
     console_printf("SO: erro na CPU do processo %d: %s", proc->pid, err_nome(erro));
     so_acorda_processos_esperando(self, proc->pid); //acorda processos esperando esse processo
     proc->usando = 0;
-    proc->estado = P_TERMINOU;
+    //proc->estado = P_TERMINOU;
+    so_muda_estado(self, proc, P_TERMINOU);
     self->processo_corrente = NO_PROCESS; //nenhum processo está executando
     libera_terminal(self, proc->pid); //libera o terminal usado pelo processo
     console_printf("SO: IRQ TRATADA -- erro na CPU: %s", err_nome(erro));
@@ -546,7 +583,8 @@ static void so_chamada_le(so_t *self)
   } else {
     //dspositivo NÃO PRONTO: bloqueia o processo
     console_printf("SO: processo %d bloqueado esperando E/S (leitura)", proc->pid);
-    proc->estado = P_BLOQUEADO;
+    //proc->estado = P_BLOQUEADO;
+    so_muda_estado(self, proc, P_BLOQUEADO);
     proc->dispositivo_bloqueado = entrada; //salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS; //força o escalonador a rodar
   }
@@ -603,7 +641,8 @@ static void so_chamada_escr(so_t *self)
   } else {
     // Dispositivo NÃO PRONTO: bloqueia o processo
     console_printf("SO: processo %d bloqueado esperando E/S (escrita)", proc->pid);
-    proc->estado = P_BLOQUEADO;
+    //proc->estado = P_BLOQUEADO;
+    so_muda_estado(self, proc, P_BLOQUEADO);
     proc->dispositivo_bloqueado = saida; // Salva qual dispositivo está esperando
     self->processo_corrente = NO_PROCESS; // Força o escalonador a rodar
   }
@@ -696,7 +735,10 @@ static void so_chamada_cria_proc(so_t *self)
     //marca o terminal como usado com o pid do processo que está usando
     self->terminais_usados[terminal_id] = novo_processo->pid;
     self->tabela_de_processos[possivel_indice] = novo_processo;//colocar o processo na tabela
-    novo_processo->estado = P_PRONTO;
+    int tempo_atual = so_tempo_total(self);
+    inicializa_metricas_pcb(novo_processo, tempo_atual);
+    so_muda_estado(self, novo_processo, P_PRONTO);
+   // novo_processo->estado = P_PRONTO;
     // t2: deveria escrever no PC do descritor do processo criado (antes: //self->regPC = ender_carga;)
     novo_processo->ctx_cpu.pc = ender_carga;
     //escrever o PID do processo criado no reg A do processo que pediu a criação
@@ -733,13 +775,14 @@ static void so_chamada_mata_proc(so_t *self)
     }
     so_acorda_processos_esperando(self, proc_alvo->pid);
     // marca como terminado
-    proc_alvo->estado = P_TERMINOU;
+    //proc_alvo->estado = P_TERMINOU;
+    so_muda_estado(self, proc_alvo, P_TERMINOU);
     proc_alvo->usando = 0;
 
     // libera terminal
     libera_terminal(self, proc_alvo->pid);
 
-    // remove da tabela
+   /*  // remove da tabela
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (self->tabela_de_processos[i] == proc_alvo) {
             free(proc_alvo);
@@ -747,7 +790,7 @@ static void so_chamada_mata_proc(so_t *self)
             break;
         }
     }
-
+ */
     // se matou a si mesmo, não há processo corrent
     if (pid_a_matar == 0 || pid_a_matar == proc_corrente->pid) {
         self->processo_corrente = NO_PROCESS;
@@ -777,7 +820,8 @@ static void so_chamada_espera_proc(so_t *self)
   console_printf("SO: processo %d esperando o processo %d", proc_corrente->pid, pid_esperado);
   //bloqueia o processo chamador 
   if(proc_esperado->estado != P_TERMINOU){
-    proc_corrente->estado = P_BLOQUEADO;
+   // proc_corrente->estado = P_BLOQUEADO;
+    so_muda_estado(self, proc_corrente, P_BLOQUEADO);
     proc_corrente->pid_esperando = pid_esperado;
     self->processo_corrente = NO_PROCESS; // Força escalonamento
   }
