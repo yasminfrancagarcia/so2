@@ -20,7 +20,7 @@
 // ---------------------------------------------------------------------
 
 // intervalo entre interrupções do relógio
-#define INTERVALO_INTERRUPCAO 50   // em instruções executadas
+#define INTERVALO_INTERRUPCAO 100   // em instruções executadas
 
 #define TERMINAIS 4
 
@@ -109,6 +109,10 @@ pcb** so_get_tabela_de_processos(so_t *self) {
 }
 int so_get_processo_corrente(so_t *self) {
   return self->processo_corrente;
+}
+
+int so_get_intervalo_interrupcao(so_t *self) {
+  return INTERVALO_INTERRUPCAO;
 }
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
@@ -743,6 +747,7 @@ static void so_chamada_cria_proc(so_t *self)
     novo_processo->ctx_cpu.pc = ender_carga;
     //escrever o PID do processo criado no reg A do processo que pediu a criação
     processo_corrente->ctx_cpu.regA = novo_processo->pid;
+    self->metricas->num_proc_criados++;
     
     return;
 

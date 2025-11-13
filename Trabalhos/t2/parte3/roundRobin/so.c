@@ -128,6 +128,9 @@ pcb** so_get_tabela_de_processos(so_t *self) {
 int so_get_processo_corrente(so_t *self) {
   return self->processo_corrente;
 }
+int so_get_intervalo_interrupcao(so_t *self) {
+  return INTERVALO_INTERRUPCAO;
+}
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
 // ---------------------------------------------------------------------

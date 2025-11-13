@@ -128,6 +128,9 @@ pcb** so_get_tabela_de_processos(so_t *self) {
 int so_get_processo_corrente(so_t *self) {
   return self->processo_corrente;
 }
+int so_get_intervalo_interrupcao(so_t *self){
+  return INTERVALO_INTERRUPCAO; 
+}
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
 // ---------------------------------------------------------------------
@@ -299,10 +302,9 @@ static void so_escalona(so_t *self)
   {
     return; //deixa ele continuar
   }
-  // se a fila de prontos está vazia, não há o que fazer
+  // se a fila de prontos está vazia, nao faz nada
   if (fila_vazia(self->fila_prontos)) {
     self->processo_corrente = NO_PROCESS;
-    console_printf("====> nenhum processo pronto fila vazia \n");
     return;
   }
   pcb *proc_escolhido = NULL;

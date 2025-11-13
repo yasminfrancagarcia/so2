@@ -1,8 +1,8 @@
-// metricas.c
+
 #include "metricas.h"
-#include "so.h" // Inclua para ter acesso aos GETTERS que vamos criar
+#include "so.h" 
 #include "err.h"
-#include "console.h" // Para console_printf
+#include "console.h" 
 #include <stdlib.h>
 
 // --- Funções de gerenciamento ---
@@ -42,10 +42,8 @@ int so_tempo_total(struct so_t *self)
     es_t *es = so_get_es(self); 
 
     if (es_le(es, D_RELOGIO_INSTRUCOES, &tempo_atual) != ERR_OK) {
-        // Não podemos acessar 'self->erro_interno' diretamente
-        // Mas podemos logar
-        console_printf("MÉTRICA: ERRO FATAL AO LER O RELOGIO!");
-        return 0; 
+      console_printf("MÉTRICA: ERRO FATAL AO LER O RELOGIO!");
+      return 0; 
     }
     return tempo_atual;
 }
@@ -222,7 +220,12 @@ void imprimir_dados(struct so_t *self)
       p->tempo_em_estado[p->estado] += delta_t;
     }
   }
-
+  
+  console_printf("\n ===== RELATÓRIO DE MÉTRICAS DO SISTEMA =====");
+  console_printf("Configurações do Sistema Operacional:");
+  console_printf(" - Política de Escalonamento: simples");
+  console_printf(" - Quantum: nenhum");
+  console_printf(" - Numero de interrupções: %d", so_get_intervalo_interrupcao(self));
   console_printf("\nMÉTRICAS GLOBAIS DO SISTEMA ");
 
   // Métrica 1: Número de processos criados
@@ -241,10 +244,9 @@ void imprimir_dados(struct so_t *self)
   console_printf("4. Número de interrupções recebidas:");
   for (int i = 0; i < N_IRQ; i++)
   {
-    if (m->contagem_irq[i] > 0)
-    {
-      console_printf("   - IRQ %d (%s): %d", i, irq_nome(i), m->contagem_irq[i]);
-    }
+   
+    console_printf("   - IRQ %d (%s): %d", i, irq_nome(i), m->contagem_irq[i]);
+    
   }
 
   // Métrica 5: Número de preempções

@@ -53,7 +53,7 @@ metricas_t* so_get_metricas(so_t *self);
 es_t* so_get_es(so_t *self);
 pcb** so_get_tabela_de_processos(so_t *self);
 int so_get_processo_corrente(so_t *self);
-
+int so_get_intervalo_interrupcao(so_t *self);
 // Chamadas de sistema
 // Uma chamada de sistema é realizada colocando a identificação da
 //   chamada (um dos valores abaixo) no registrador A e executando a

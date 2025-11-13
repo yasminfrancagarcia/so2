@@ -1,7 +1,7 @@
 #ifndef PROCESSO_H
 #define PROCESSO_H
 
-#define QUANTUM 10
+#define QUANTUM 5
 #define MAX_PROCESSES 4
 #define NO_PROCESS -1
 #include <stdio.h>
