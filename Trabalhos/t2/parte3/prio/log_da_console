@@ -1,41 +1,10 @@
+CMD: 'd0'
 CMD: 'c'
 SO: recebi IRQ 0 (Reset)
 SO: carga de 'trata_int.maq' em 60-72
 SO: carga de 'init.maq' em 100-270
 SO: processo inicial criado com PID 1 
-====> processo 1 (prio 0.50) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-CMD: 'd0'
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 1 expirou, forçando troca de contexto.
-====> processo 1 (prio 0.75) escolhido 
+====> processo 1 (prio 0,50) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -66,7 +35,38 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 1 expirou, forçando troca de contexto.
-====> processo 1 (prio 0.88) escolhido 
+====> processo 1 (prio 0,75) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 1 expirou, forçando troca de contexto.
+====> processo 1 (prio 0,88) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -81,7 +81,7 @@ SO: carga de 'p3.maq' em 9000-9241
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 9
 SO: processo 1 esperando o processo 2
-====> processo 2 (prio 0.50) escolhido 
+====> processo 2 (prio 0,50) escolhido 
 Fila: 
 3 
 4 
@@ -110,7 +110,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.50) escolhido 
+====> processo 3 (prio 0,50) escolhido 
 Fila: 
 4 
 2 
@@ -143,7 +143,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.50) escolhido 
+====> processo 4 (prio 0,50) escolhido 
 Fila: 
 2 
 3 
@@ -176,7 +176,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.75) escolhido 
+====> processo 2 (prio 0,75) escolhido 
 Fila: 
 3 
 4 
@@ -209,7 +209,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.75) escolhido 
+====> processo 3 (prio 0,75) escolhido 
 Fila: 
 4 
 2 
@@ -242,7 +242,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.75) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 2 
 3 
@@ -275,7 +275,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.88) escolhido 
+====> processo 2 (prio 0,88) escolhido 
 Fila: 
 3 
 4 
@@ -308,7 +308,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.88) escolhido 
+====> processo 3 (prio 0,88) escolhido 
 Fila: 
 4 
 2 
@@ -341,7 +341,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 2 
 3 
@@ -374,7 +374,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.94) escolhido 
+====> processo 2 (prio 0,94) escolhido 
 Fila: 
 3 
 4 
@@ -407,7 +407,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.94) escolhido 
+====> processo 3 (prio 0,94) escolhido 
 Fila: 
 4 
 2 
@@ -440,7 +440,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.94) escolhido 
+====> processo 4 (prio 0,94) escolhido 
 Fila: 
 2 
 3 
@@ -473,7 +473,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.97) escolhido 
+====> processo 2 (prio 0,97) escolhido 
 Fila: 
 3 
 4 
@@ -506,7 +506,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.97) escolhido 
+====> processo 3 (prio 0,97) escolhido 
 Fila: 
 4 
 2 
@@ -539,7 +539,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.97) escolhido 
+====> processo 4 (prio 0,97) escolhido 
 Fila: 
 2 
 3 
@@ -572,7 +572,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.98) escolhido 
+====> processo 2 (prio 0,98) escolhido 
 Fila: 
 3 
 4 
@@ -605,7 +605,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.98) escolhido 
+====> processo 3 (prio 0,98) escolhido 
 Fila: 
 4 
 2 
@@ -638,7 +638,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.98) escolhido 
+====> processo 4 (prio 0,98) escolhido 
 Fila: 
 2 
 3 
@@ -671,7 +671,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 0.99) escolhido 
+====> processo 2 (prio 0,99) escolhido 
 Fila: 
 3 
 4 
@@ -698,7 +698,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.99) escolhido 
+====> processo 3 (prio 0,99) escolhido 
 Fila: 
 4 
 2 
@@ -725,7 +725,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.99) escolhido 
+====> processo 4 (prio 0,99) escolhido 
 Fila: 
 2 
 3 
@@ -752,7 +752,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 3 
 4 
@@ -775,7 +775,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 1.00) escolhido 
+====> processo 3 (prio 1,00) escolhido 
 Fila: 
 4 
 2 
@@ -794,7 +794,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 1.00) escolhido 
+====> processo 4 (prio 1,00) escolhido 
 Fila: 
 2 
 3 
@@ -815,7 +815,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 3 
 
@@ -826,7 +826,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.50) escolhido 
+====> processo 4 (prio 0,50) escolhido 
 Fila: 
 3 
 2 
@@ -837,7 +837,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 1.00) escolhido 
+====> processo 3 (prio 1,00) escolhido 
 Fila: 
 2 
 
@@ -850,13 +850,13 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.25) escolhido 
+====> processo 4 (prio 0,25) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.62) escolhido 
+====> processo 4 (prio 0,62) escolhido 
 Fila: 
 2 
 
@@ -866,7 +866,7 @@ SO: E/S pronta para pid 3 (disp 10), desbloqueando.
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.50) escolhido 
+====> processo 3 (prio 0,50) escolhido 
 Fila: 
 2 
 
@@ -874,63 +874,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 3 (disp 10), desbloqueando.
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.25) escolhido 
-Fila: 
-4 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.62) escolhido 
-Fila: 
-4 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.81) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: E/S pronta para pid 3 (disp 10), desbloqueando.
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.31) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.66) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -941,7 +885,63 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.41) escolhido 
+====> processo 3 (prio 0,25) escolhido 
+Fila: 
+4 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 3 expirou, forçando troca de contexto.
+====> processo 3 (prio 0,62) escolhido 
+Fila: 
+4 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 3 bloqueado esperando E/S (escrita)
+====> processo 4 (prio 0,81) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: E/S pronta para pid 3 (disp 10), desbloqueando.
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+====> processo 3 (prio 0,31) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 3 expirou, forçando troca de contexto.
+====> processo 3 (prio 0,66) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 3 bloqueado esperando E/S (escrita)
+====> processo 2 (prio 1,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 3 (disp 10), desbloqueando.
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 2 expirou, forçando troca de contexto.
+====> processo 4 (prio 0,41) escolhido 
 Fila: 
 3 
 2 
@@ -952,7 +952,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.83) escolhido 
+====> processo 3 (prio 0,83) escolhido 
 Fila: 
 2 
 
@@ -963,7 +963,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.20) escolhido 
+====> processo 4 (prio 0,20) escolhido 
 Fila: 
 2 
 3 
@@ -974,7 +974,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.91) escolhido 
+====> processo 3 (prio 0,91) escolhido 
 Fila: 
 2 
 
@@ -985,7 +985,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.10) escolhido 
+====> processo 4 (prio 0,10) escolhido 
 Fila: 
 2 
 
@@ -994,7 +994,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: E/S pronta para pid 3 (disp 10), desbloqueando.
-====> processo 3 (prio 0.46) escolhido 
+====> processo 3 (prio 0,46) escolhido 
 Fila: 
 2 
 
@@ -1002,20 +1002,20 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.53) escolhido 
+====> processo 4 (prio 0,53) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1026,7 +1026,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.23) escolhido 
+====> processo 3 (prio 0,23) escolhido 
 Fila: 
 4 
 2 
@@ -1036,7 +1036,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.61) escolhido 
+====> processo 3 (prio 0,61) escolhido 
 Fila: 
 4 
 2 
@@ -1047,7 +1047,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.76) escolhido 
+====> processo 4 (prio 0,76) escolhido 
 Fila: 
 2 
 
@@ -1058,7 +1058,7 @@ SO: E/S pronta para pid 3 (disp 10), desbloqueando.
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.31) escolhido 
+====> processo 3 (prio 0,31) escolhido 
 Fila: 
 2 
 
@@ -1066,7 +1066,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1077,7 +1077,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.15) escolhido 
+====> processo 3 (prio 0,15) escolhido 
 Fila: 
 4 
 2 
@@ -1088,7 +1088,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.38) escolhido 
+====> processo 4 (prio 0,38) escolhido 
 Fila: 
 2 
 3 
@@ -1099,7 +1099,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.58) escolhido 
+====> processo 3 (prio 0,58) escolhido 
 Fila: 
 2 
 
@@ -1112,7 +1112,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.19) escolhido 
+====> processo 4 (prio 0,19) escolhido 
 Fila: 
 2 
 
@@ -1123,7 +1123,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: E/S pronta para pid 3 (disp 10), desbloqueando.
-====> processo 3 (prio 0.29) escolhido 
+====> processo 3 (prio 0,29) escolhido 
 Fila: 
 2 
 
@@ -1131,7 +1131,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1142,7 +1142,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.10) escolhido 
+====> processo 4 (prio 0,10) escolhido 
 Fila: 
 3 
 2 
@@ -1153,13 +1153,13 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.14) escolhido 
+====> processo 3 (prio 0,14) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.57) escolhido 
+====> processo 3 (prio 0,57) escolhido 
 Fila: 
 2 
 
@@ -1172,7 +1172,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 2 
 3 
@@ -1181,7 +1181,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.52) escolhido 
+====> processo 4 (prio 0,52) escolhido 
 Fila: 
 2 
 3 
@@ -1189,7 +1189,7 @@ Fila:
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.79) escolhido 
+====> processo 3 (prio 0,79) escolhido 
 Fila: 
 2 
 
@@ -1200,7 +1200,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.76) escolhido 
+====> processo 4 (prio 0,76) escolhido 
 Fila: 
 2 
 
@@ -1208,7 +1208,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1219,7 +1219,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.38) escolhido 
+====> processo 4 (prio 0,38) escolhido 
 Fila: 
 3 
 2 
@@ -1230,7 +1230,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.39) escolhido 
+====> processo 3 (prio 0,39) escolhido 
 Fila: 
 2 
 
@@ -1241,7 +1241,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.19) escolhido 
+====> processo 4 (prio 0,19) escolhido 
 Fila: 
 2 
 
@@ -1249,7 +1249,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1260,7 +1260,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.10) escolhido 
+====> processo 4 (prio 0,10) escolhido 
 Fila: 
 3 
 2 
@@ -1271,7 +1271,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.20) escolhido 
+====> processo 3 (prio 0,20) escolhido 
 Fila: 
 2 
 
@@ -1280,7 +1280,7 @@ SO: E/S pronta para pid 4 (disp 14), desbloqueando.
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 2 
 3 
@@ -1290,7 +1290,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.60) escolhido 
+====> processo 3 (prio 0,60) escolhido 
 Fila: 
 2 
 
@@ -1304,13 +1304,13 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.02) escolhido 
+====> processo 4 (prio 0,02) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.51) escolhido 
+====> processo 4 (prio 0,51) escolhido 
 Fila: 
 2 
 
@@ -1321,14 +1321,14 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.30) escolhido 
+====> processo 3 (prio 0,30) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1339,7 +1339,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.15) escolhido 
+====> processo 3 (prio 0,15) escolhido 
 Fila: 
 4 
 2 
@@ -1348,7 +1348,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.26) escolhido 
+====> processo 4 (prio 0,26) escolhido 
 Fila: 
 2 
 3 
@@ -1359,7 +1359,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.57) escolhido 
+====> processo 3 (prio 0,57) escolhido 
 Fila: 
 2 
 
@@ -1370,7 +1370,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 3 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.13) escolhido 
+====> processo 4 (prio 0,13) escolhido 
 Fila: 
 2 
 3 
@@ -1380,7 +1380,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.79) escolhido 
+====> processo 3 (prio 0,79) escolhido 
 Fila: 
 2 
 
@@ -1390,7 +1390,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1401,7 +1401,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.06) escolhido 
+====> processo 4 (prio 0,06) escolhido 
 Fila: 
 3 
 2 
@@ -1412,7 +1412,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 3 (prio 0.39) escolhido 
+====> processo 3 (prio 0,39) escolhido 
 Fila: 
 2 
 
@@ -1423,7 +1423,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 3 bloqueado esperando E/S (escrita)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.03) escolhido 
+====> processo 4 (prio 0,03) escolhido 
 Fila: 
 2 
 
@@ -1431,7 +1431,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1442,14 +1442,14 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.02) escolhido 
+====> processo 4 (prio 0,02) escolhido 
 Fila: 
 3 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 3 (prio 0.20) escolhido 
+====> processo 3 (prio 0,20) escolhido 
 Fila: 
 2 
 4 
@@ -1459,7 +1459,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 8
 SO: Métricas finais do PID 3 salvas no histórico.
-====> processo 4 (prio 0.51) escolhido 
+====> processo 4 (prio 0,51) escolhido 
 Fila: 
 2 
 
@@ -1469,7 +1469,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1479,7 +1479,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.25) escolhido 
+====> processo 4 (prio 0,25) escolhido 
 Fila: 
 2 
 
@@ -1489,7 +1489,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1499,7 +1499,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.13) escolhido 
+====> processo 4 (prio 0,13) escolhido 
 Fila: 
 2 
 
@@ -1508,7 +1508,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1518,7 +1518,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.06) escolhido 
+====> processo 4 (prio 0,06) escolhido 
 Fila: 
 2 
 
@@ -1528,7 +1528,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1538,7 +1538,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.03) escolhido 
+====> processo 4 (prio 0,03) escolhido 
 Fila: 
 2 
 
@@ -1548,7 +1548,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1558,7 +1558,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.02) escolhido 
+====> processo 4 (prio 0,02) escolhido 
 Fila: 
 2 
 
@@ -1567,7 +1567,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1577,13 +1577,13 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.50) escolhido 
+====> processo 4 (prio 0,50) escolhido 
 Fila: 
 2 
 
@@ -1592,7 +1592,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1604,7 +1604,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.75) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 2 
 
@@ -1614,7 +1614,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1624,7 +1624,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 2 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.38) escolhido 
+====> processo 4 (prio 0,38) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1634,14 +1634,14 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 2 (disp 6), desbloqueando.
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.19) escolhido 
+====> processo 4 (prio 0,19) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.50) escolhido 
+====> processo 2 (prio 0,50) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -1651,7 +1651,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 2 (disp 6), desbloqueando.
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.09) escolhido 
+====> processo 4 (prio 0,09) escolhido 
 Fila: 
 2 
 
@@ -1659,7 +1659,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.25) escolhido 
+====> processo 2 (prio 0,25) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1668,7 +1668,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 2 
 
@@ -1677,27 +1677,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.62) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.02) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.81) escolhido 
+====> processo 2 (prio 0,62) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1707,7 +1687,27 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,02) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+====> processo 2 (prio 0,81) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 2 expirou, forçando troca de contexto.
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 2 
 
@@ -1715,14 +1715,14 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.51) escolhido 
+====> processo 4 (prio 0,51) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.91) escolhido 
+====> processo 2 (prio 0,91) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1732,7 +1732,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.75) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 2 
 
@@ -1741,7 +1741,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.95) escolhido 
+====> processo 2 (prio 0,95) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1751,7 +1751,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 2 
 
@@ -1761,7 +1761,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.98) escolhido 
+====> processo 2 (prio 0,98) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1771,7 +1771,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.44) escolhido 
+====> processo 4 (prio 0,44) escolhido 
 Fila: 
 2 
 
@@ -1781,7 +1781,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.99) escolhido 
+====> processo 2 (prio 0,99) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1791,7 +1791,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.22) escolhido 
+====> processo 4 (prio 0,22) escolhido 
 Fila: 
 2 
 
@@ -1800,7 +1800,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.99) escolhido 
+====> processo 2 (prio 0,99) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1810,7 +1810,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.11) escolhido 
+====> processo 4 (prio 0,11) escolhido 
 Fila: 
 2 
 
@@ -1820,7 +1820,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1830,7 +1830,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 2 
 
@@ -1840,7 +1840,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1850,7 +1850,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.03) escolhido 
+====> processo 4 (prio 0,03) escolhido 
 Fila: 
 2 
 
@@ -1859,7 +1859,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1869,13 +1869,13 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.51) escolhido 
+====> processo 4 (prio 0,51) escolhido 
 Fila: 
 2 
 
@@ -1884,7 +1884,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1894,7 +1894,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.75) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 2 
 
@@ -1904,7 +1904,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1914,7 +1914,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.38) escolhido 
+====> processo 4 (prio 0,38) escolhido 
 Fila: 
 2 
 
@@ -1923,7 +1923,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -1933,66 +1933,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.19) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.09) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.05) escolhido 
-Fila: 
-2 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.02) escolhido 
+====> processo 4 (prio 0,19) escolhido 
 Fila: 
 2 
 
@@ -2002,7 +1943,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2012,7 +1953,66 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,09) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+====> processo 2 (prio 1,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 2 expirou, forçando troca de contexto.
+====> processo 4 (prio 0,05) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+====> processo 2 (prio 1,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 2 expirou, forçando troca de contexto.
+====> processo 4 (prio 0,02) escolhido 
+Fila: 
+2 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+====> processo 2 (prio 1,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: quantum do processo 2 expirou, forçando troca de contexto.
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 2 
 
@@ -2020,14 +2020,14 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.51) escolhido 
+====> processo 4 (prio 0,51) escolhido 
 Fila: 
 2 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2037,7 +2037,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 2 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.75) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 2 
 
@@ -2046,7 +2046,7 @@ SO: chamada de sistema 2
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 1.00) escolhido 
+====> processo 2 (prio 1,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2057,7 +2057,7 @@ SO: E/S pronta para pid 4 (disp 14), desbloqueando.
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 2 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2068,7 +2068,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.50) escolhido 
+====> processo 2 (prio 0,50) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2078,14 +2078,14 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 2 (disp 6), desbloqueando.
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 2 (prio 0.25) escolhido 
+====> processo 2 (prio 0,25) escolhido 
 Fila: 
 4 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 2 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.44) escolhido 
+====> processo 4 (prio 0,44) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2095,14 +2095,14 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 2 (disp 6), desbloqueando.
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 2 (prio 0.12) escolhido 
+====> processo 2 (prio 0,12) escolhido 
 Fila: 
 4 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 2 bloqueado esperando E/S (escrita)
-====> processo 4 (prio 0.22) escolhido 
+====> processo 4 (prio 0,22) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2113,7 +2113,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 2 (prio 0.06) escolhido 
+====> processo 2 (prio 0,06) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2123,7 +2123,7 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 2 (disp 6), desbloqueando.
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 2 (prio 0.03) escolhido 
+====> processo 2 (prio 0,03) escolhido 
 Fila: 
 4 
 
@@ -2131,14 +2131,14 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 8
 SO: processo 2 (que morreu) estava sendo esperado por 1. Acordando.
 SO: Métricas finais do PID 2 salvas no histórico.
-====> processo 4 (prio 0.11) escolhido 
+====> processo 4 (prio 0,11) escolhido 
 Fila: 
 1 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
-====> processo 1 (prio 0.94) escolhido 
+====> processo 1 (prio 0,94) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2149,12 +2149,12 @@ SO: chamada de sistema 9
 SO: processo 1 esperando o processo 4
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.05) escolhido 
+====> processo 4 (prio 0,05) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.53) escolhido 
+====> processo 4 (prio 0,53) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2162,16 +2162,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.76) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,76) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2180,16 +2171,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.94) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.47) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2198,16 +2180,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.24) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.12) escolhido 
+====> processo 4 (prio 0,94) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2216,7 +2189,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.06) escolhido 
+====> processo 4 (prio 0,47) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2225,7 +2198,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.03) escolhido 
+====> processo 4 (prio 0,24) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2234,7 +2207,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,12) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2243,7 +2216,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,06) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2252,7 +2225,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,03) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2261,7 +2234,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2270,7 +2243,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2279,7 +2252,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2288,12 +2261,39 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.50) escolhido 
+====> processo 4 (prio 0,50) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2301,16 +2301,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.75) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2319,16 +2310,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.94) escolhido 
-Fila: 
-
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.47) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2337,16 +2319,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.23) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.12) escolhido 
+====> processo 4 (prio 0,94) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2355,7 +2328,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.06) escolhido 
+====> processo 4 (prio 0,47) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2364,7 +2337,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.03) escolhido 
+====> processo 4 (prio 0,23) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2373,7 +2346,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,12) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2382,7 +2355,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.01) escolhido 
+====> processo 4 (prio 0,06) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2391,7 +2364,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,03) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2400,7 +2373,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
@@ -2409,7 +2382,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,01) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2418,7 +2391,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2427,12 +2400,39 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.00) escolhido 
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,00) escolhido 
 Fila: 
 
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 4 expirou, forçando troca de contexto.
-====> processo 4 (prio 0.50) escolhido 
+====> processo 4 (prio 0,50) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2440,16 +2440,7 @@ SO: chamada de sistema 2
 SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.75) escolhido 
-Fila: 
-
-SO: recebi IRQ 2 (Chamada de sistema)
-SO: chamada de sistema 2
-SO: processo 4 bloqueado esperando E/S (escrita)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: recebi IRQ 3 (E/S: relógio)
-SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.88) escolhido 
+====> processo 4 (prio 0,75) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2458,7 +2449,7 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.94) escolhido 
+====> processo 4 (prio 0,88) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2467,14 +2458,23 @@ SO: processo 4 bloqueado esperando E/S (escrita)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: E/S pronta para pid 4 (disp 14), desbloqueando.
-====> processo 4 (prio 0.97) escolhido 
+====> processo 4 (prio 0,94) escolhido 
+Fila: 
+
+SO: recebi IRQ 2 (Chamada de sistema)
+SO: chamada de sistema 2
+SO: processo 4 bloqueado esperando E/S (escrita)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: E/S pronta para pid 4 (disp 14), desbloqueando.
+====> processo 4 (prio 0,97) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 8
 SO: processo 4 (que morreu) estava sendo esperado por 1. Acordando.
 SO: Métricas finais do PID 4 salvas no histórico.
-====> processo 1 (prio 0.47) escolhido 
+====> processo 1 (prio 0,47) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -2498,7 +2498,7 @@ SO: recebi IRQ 2 (Chamada de sistema)
 SO: chamada de sistema 2
 SO: recebi IRQ 3 (E/S: relógio)
 SO: quantum do processo 1 expirou, forçando troca de contexto.
-====> processo 1 (prio 0.73) escolhido 
+====> processo 1 (prio 0,73) escolhido 
 Fila: 
 
 SO: recebi IRQ 2 (Chamada de sistema)
@@ -3862,6 +3862,1161 @@ SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
+CMD: ''
+Comando '
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
+SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
 SO: recebi IRQ 3 (E/S: relógio)
@@ -4054,13 +5209,13 @@ Configurações do Sistema Operacional:
 
 MÉTRICAS GLOBAIS DO SISTEMA 
 1. Número total de processos criados: 4
-2. Tempo total de execução do sistema: 107066 ciclos
-3. Tempo total em que o sistema ficou ocioso: 82947 ciclos (77.47%)
+2. Tempo total de execução do sistema: 168147 ciclos
+3. Tempo total em que o sistema ficou ocioso: 144028 ciclos (85,66%)
 4. Número de interrupções recebidas:
    - IRQ 0 (Reset): 1
    - IRQ 1 (Erro de execução): 0
    - IRQ 2 (Chamada de sistema): 462
-   - IRQ 3 (E/S: relógio): 2015
+   - IRQ 3 (E/S: relógio): 3168
    - IRQ 4 (E/S: teclado): 0
    - IRQ 5 (E/S: console): 0
 5. Número total de preempções (troca por quantum): 85
@@ -4080,7 +5235,7 @@ MÉTRICAS GLOBAIS DO SISTEMA
    - Executando: 1086 ciclos
    - Bloqueado: 25673 ciclos
    - Terminou: 0 ciclos
-10. Tempo médio de resposta (pós-bloqueio): 11.00 ciclos (Total: 22 / 2 eventos)
+10. Tempo médio de resposta (pós-bloqueio): 11,00 ciclos (Total: 22 / 2 eventos)
 
 >> Processo PID: 2
 6. Tempo de Retorno (Turnaround): 22049 ciclos (Criado: 556, Terminado: 22605)
@@ -4095,7 +5250,7 @@ MÉTRICAS GLOBAIS DO SISTEMA
    - Executando: 10871 ciclos
    - Bloqueado: 471 ciclos
    - Terminou: 0 ciclos
-10. Tempo médio de resposta (pós-bloqueio): 22.00 ciclos (Total: 154 / 7 eventos)
+10. Tempo médio de resposta (pós-bloqueio): 22,00 ciclos (Total: 154 / 7 eventos)
 
 >> Processo PID: 3
 6. Tempo de Retorno (Turnaround): 13288 ciclos (Criado: 569, Terminado: 13857)
@@ -4110,7 +5265,7 @@ MÉTRICAS GLOBAIS DO SISTEMA
    - Executando: 4833 ciclos
    - Bloqueado: 908 ciclos
    - Terminou: 0 ciclos
-10. Tempo médio de resposta (pós-bloqueio): 159.62 ciclos (Total: 2554 / 16 eventos)
+10. Tempo médio de resposta (pós-bloqueio): 159,62 ciclos (Total: 2554 / 16 eventos)
 
 >> Processo PID: 4
 6. Tempo de Retorno (Turnaround): 25740 ciclos (Criado: 582, Terminado: 26322)
@@ -4125,4 +5280,4 @@ MÉTRICAS GLOBAIS DO SISTEMA
    - Executando: 7329 ciclos
    - Bloqueado: 5353 ciclos
    - Terminou: 0 ciclos
-10. Tempo médio de resposta (pós-bloqueio): 95.87 ciclos (Total: 8724 / 91 eventos)
+10. Tempo médio de resposta (pós-bloqueio): 95,87 ciclos (Total: 8724 / 91 eventos)
