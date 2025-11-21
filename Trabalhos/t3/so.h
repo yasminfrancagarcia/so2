@@ -9,51 +9,15 @@
 typedef struct so_t so_t;
 
 #include "memoria.h"
+#include "mmu.h"
 #include "cpu.h"
 #include "es.h"
 #include "console.h" // só para uma gambiarra
-#include "metricas.h" // para metricas_t'
-#include "processo.h" // para 'pcb'
-/* #define MAX_PROCESSES 4
-struct so_t
-{
-  cpu_t *cpu;
-  mem_t *mem;
-  es_t *es;
-  console_t *console;
-  bool erro_interno;
 
-  int regA, regX, regPC, regERRO; // cópia do estado da CPU
-  // t2: tabela de processos, processo corrente, pendências, etc
-  pcb *tabela_de_processos[MAX_PROCESSES];
-  int processo_corrente; // índice na tabela de processos
-  // vetor para guardar os pids dos processos que estão usando os terminais
-  // idx = 0 -> terminal A
-  // idx = 1 -> terminal B...
-  int terminais_usados[4];
-  fila *fila_prontos;   // fila de processos prontos
-  //métricas
-  int num_proc_criados; // 1- número de processos ativos (métrica 2 nao precisa ser guardada aqui)
-  int tempo_ocioso;    // 3- tempo total em que o sistema ficou ocioso
-  int contagem_irq[N_IRQ]; // 4- número de interrupções recebidas de cada tipo
-  int num_preemcoes_total;      // 5- número de preempções
-  //auxiliar metricas 3 e 9
-  int tempo_ultima_atualizacao_metricas; // Timestamp da última atualização de métricas
-  //Novo Campo para Histórico, guardará as métricas de TODOS os processos que já existiram
-  metricas_processo_final_t historico_metricas[MAX_PROCESSES];
-}; */
-
-so_t *so_cria(cpu_t *cpu, mem_t *mem, es_t *es, console_t *console);
+so_t *so_cria(cpu_t *cpu, mem_t *mem, mmu_t *mmu,
+              es_t *es, console_t *console);
 void so_destroi(so_t *self);
-//void imprimir_dados(so_t *self);
-// --- GETTERS para o Módulo de Métricas ---
-// (Funções que permitem 'metricas.c' ler dados de 'so.c')
 
-metricas_t* so_get_metricas(so_t *self);
-es_t* so_get_es(so_t *self);
-pcb** so_get_tabela_de_processos(so_t *self);
-int so_get_processo_corrente(so_t *self);
-int so_get_intervalo_interrupcao(so_t *self);
 // Chamadas de sistema
 // Uma chamada de sistema é realizada colocando a identificação da
 //   chamada (um dos valores abaixo) no registrador A e executando a
@@ -112,7 +76,5 @@ int so_get_intervalo_interrupcao(so_t *self);
 // bloqueia o processo chamador até que o processo com o pid informado termine
 // retorna sem bloquear, com erro, se não existir processo com esse pid
 #define SO_ESPERA_PROC 9
-/* #define MAX_PROCESSES 4
-#define NO_PROCESS -1 */
 
 #endif // SO_H
