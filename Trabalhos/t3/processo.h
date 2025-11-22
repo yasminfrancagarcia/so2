@@ -5,7 +5,7 @@
 #define MAX_PROCESSES 4
 #define NO_PROCESS -1
 #include <stdio.h>
-
+#include "tabpag.h"
 #include "dispositivos.h"
 
 typedef enum {
@@ -22,6 +22,7 @@ typedef struct {
     int regA;
     int regX;
     err_t erro;
+    int complemento;
 } cpu_ctx;
 
 /* 1- número de processos criados
@@ -59,6 +60,7 @@ typedef struct {
     int tempo_desbloqueou; // Timestamp de quando saiu de BLOQUEADO
     int tempo_total_resposta_pos_bloqueio;// soma dos tempos de resposta pós bloqueio
     int num_respostas_pos_bloqueio; // N. de vezes que foi de BLOQUEADO -> PRONTO 
+    tabpag_t* tabela_paginas; // tabela de páginas do processo
 } pcb;
 
 //a struct que guardará as métricas finais, é um histórico de processos finalizados
@@ -84,7 +86,7 @@ typedef struct {
     int num_respostas_pos_bloqueio;
 } metricas_processo_final_t;
 
-pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida);
+pcb* criar_processo( dispositivo_id_t entrada, dispositivo_id_t saida);
 
 void mata_processo(pcb* processo);
 

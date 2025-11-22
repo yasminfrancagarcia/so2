@@ -1,10 +1,10 @@
 #include "processo.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "tabpag.h"
 int pid_inicial = 1;
 
-pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida) {
+pcb* criar_processo(dispositivo_id_t entrada, dispositivo_id_t saida) {
     pcb* novo_processo = (pcb*)malloc(sizeof(pcb));
     if (novo_processo == NULL) {
         printf("Erro ao alocar memória para o novo processo.\n");
@@ -13,15 +13,17 @@ pcb* criar_processo(int pc, dispositivo_id_t entrada, dispositivo_id_t saida) {
     novo_processo->usando = 1; // Marcado como ocupado
     novo_processo->pid = pid_inicial++; //processo começa com pid 1 
     novo_processo->estado = P_PRONTO; // Estado inicial como pronto
-    novo_processo->ctx_cpu.pc = pc; //salva o antigo valor de pc 
+    //novo_processo->ctx_cpu.pc = pc; //salva o antigo valor de pc 
     novo_processo->ctx_cpu.regA = 0;
     novo_processo->ctx_cpu.regX = 0;
     novo_processo->ctx_cpu.erro = 0;
+    novo_processo->ctx_cpu.complemento = 0;
     novo_processo->entrada = entrada;
     novo_processo->saida = saida;
     novo_processo->dispositivo_bloqueado = -1; // Nenhum dispositivo bloqueado inicialmente
     novo_processo->pid_esperando = -1; // Nenhum processo esperando inicialmente
     novo_processo->quantum = QUANTUM; // Inicializa o quantum
+    novo_processo->tabela_paginas = tabpag_cria(); // Cria a tabela de páginas
     return novo_processo;
 }
 

@@ -37,6 +37,7 @@
 4- número de interrupções recebidas de cada tipo
 5- número de preempções */
 struct so_t
+
 {
   cpu_t *cpu;
   mem_t *mem;
