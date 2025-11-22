@@ -18,7 +18,7 @@
 #include "processo.h"
 #include "fila.h"
 #include "metricas.h"
-
+#include "bloco.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -30,6 +30,7 @@
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 #define TERMINAIS 4
+#define FISICA_TAM 10000 // tamanho da memória física em bytes
 // Não tem processos nem memória virtual, mas é preciso usar a paginação,
 //   pelo menos para implementar relocação, já que os programas estão sendo
 //   todos montados para serem executados no endereço 0 e o endereço 0
@@ -73,14 +74,12 @@ struct so_t {
   int terminais_usados[4];
   fila *fila_prontos;   // fila de processos prontos
   metricas_t *metricas;
-  // primeiro quadro da memória que está livre (quadros anteriores estão ocupados)
-  // t3: com memória virtual, o controle de memória livre e ocupada deve ser mais
-  //     completo que isso
-  int quadro_livre;
-  // uma tabela de páginas para poder usar a MMU
-  // t3: com processos, não tem esta tabela global, tem que ter uma para
-  //     cada processo
-  tabpag_t *tabpag_global;
+  // t3: com memória virtual
+  mem_t *mem_fisica; // memória física do sistema
+  int bloco_livre; // índice do primeiro bloco livre na memória física
+  bloco_t* blocos_memoria; // rastreador de blocos de memória física
+  int num_paginas_fisicas; // número de páginas na memória física
+
 };
 
 
@@ -110,16 +109,21 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mmu_t *mmu,
 
   self->cpu = cpu;
   self->mem = mem;
+  self->mem_fisica = mem_cria(FISICA_TAM);
   self->mmu = mmu;
   self->es = es;
   self->console = console;
   self->erro_interno = false;
-
+  // t3: inicializa controle de memória física
+  self->bloco_livre = 0;
+  self->num_paginas_fisicas = mem_tam(self->mem_fisica) / TAM_PAGINA;
+  self->blocos_memoria = cria_bloco(self->num_paginas_fisicas);
    // processos
   self->processo_corrente = NO_PROCESS;
 
   // quando a CPU executar uma instrução CHAMAC, deve chamar a função
   //   so_trata_interrupcao, com primeiro argumento um ptr para o SO
+  cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
   self->fila_prontos = cria_fila();
   // inicializar terminais
   for (int i = 0; i < TERMINAIS; i++)
@@ -128,17 +132,14 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mmu_t *mmu,
   }
   self->metricas = metricas_cria();
   return self;
-  // quando a CPU executar uma instrução CHAMAC, deve chamar a função
-  //   so_trata_interrupcao, com primeiro argumento um ptr para o SO
-  cpu_define_chamaC(self->cpu, so_trata_interrupcao, self);
+
   
   // inicializa a tabela de páginas global, e entrega ela para a MMU
   // t3: com processos, essa tabela não existiria, teria uma por processo, que
   //     deve ser colocada na MMU quando o processo é despachado para execução
-  self->tabpag_global = tabpag_cria();
-  mmu_define_tabpag(self->mmu, self->tabpag_global);
+  //self->tabpag_global = tabpag_cria();
+  //mmu_define_tabpag(self->mmu, self->tabpag_global);
 
-  return self;
 }
 
 void so_destroi(so_t *self)
@@ -418,11 +419,79 @@ static int so_despacha(so_t *self)
   mem_escreve(self->mem, 59, contexto.regX);
   mem_escreve(self->mem, CPU_END_erro, contexto.erro);
   mem_escreve(self->mem, CPU_END_complemento, contexto.complemento); // limpa complemento
-
+  // define a tabela de páginas do processo corrente na MMU
+  mmu_define_tabpag(self->mmu, self->tabela_de_processos[self->processo_corrente]->tabela_paginas);
   if (self->erro_interno)
     return 1;
   else
     return 0;
+
+}
+
+static int pag_livre(so_t *self) {
+    for (size_t i = 0; i < self->num_paginas_fisicas; i++) {
+        if (!self->blocos_memoria[i].ocupado) {
+            return i;
+        }
+    }
+    return -1; // Nenhuma página livre
+}
+
+static void page_fault_tratavel(so_t *self, int end_causador)
+{
+  // implementar troca de páginas
+  pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+  int pg_livre = pag_livre(self);
+  int ini_end_fisico = proc_corrente->end_disco;
+  int end_disco = ini_end_fisico;
+
+  int ini_end_virtual = end_causador;
+  int fim_end_virtual = ini_end_virtual + TAM_PAGINA - 1;
+  // copia os dados da página do disco para a memória física
+  for (int end_virt = ini_end_virtual; end_virt <= fim_end_virtual; end_virt++)
+  {
+    int dado;
+    if (mem_le(self->mem_fisica, end_disco, &dado) != ERR_OK)
+    {
+      console_printf("SO: erro na leitura da memória física durante troca de página");
+      self->erro_interno = true;
+      return;
+    }
+    int quadro_fisico = pg_livre * TAM_PAGINA + (end_virt - ini_end_virtual);
+    if (mem_escreve(self->mem, quadro_fisico, dado) != ERR_OK)
+    {
+      console_printf("SO: erro na escrita da memória principal durante troca de página");
+      // self->erro_interno = true;
+      return;
+    }
+    end_disco++;
+  }
+  // atualiza a tabela de páginas do processo
+  self->blocos_memoria[pg_livre].ocupado = true;
+  self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
+  tabpag_t *tabela = proc_corrente->tabela_paginas;
+  tabpag_define_quadro(tabela, end_causador / 10, pg_livre);
+  console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_corrente->pid, end_causador / 10, pg_livre);
+}
+
+static void so_trata_page_fault(so_t *self)
+{
+  int end_causador = self->tabela_de_processos[self->processo_corrente]->ctx_cpu.complemento;
+  console_printf("SO: tratando page fault para endereço %d", end_causador);
+  bool existe = false;
+  for(size_t i=0; i<self->num_paginas_fisicas; i++) {
+    if(!self->blocos_memoria[i].ocupado) {
+      //page_fault_tratavel(self, end_causador);
+      existe = true;
+      break;
+    }
+  }
+  if(existe) {
+    page_fault_tratavel(self, end_causador);
+  } else {
+    console_printf("SO: não há páginas livres para tratar o page fault");
+    self->erro_interno = true;
+  }
 
 }
 
@@ -537,6 +606,7 @@ static void so_trata_reset(so_t *self)
   processo_inicial->ctx_cpu.regA = 0; 
   processo_inicial->ctx_cpu.regX = 0; 
   processo_inicial->ctx_cpu.erro = 0; 
+  processo_inicial->ctx_cpu.complemento = 0;
 
   //self->regPC = processo_inicial->ctx_cpu.pc;
   // Inicializa campos de bloqueio
@@ -575,11 +645,6 @@ static void so_acorda_processos_esperando(so_t *self, int pid_que_morreu)
       enfileira(self->fila_prontos, proc->pid);
     }
   }
-}
-static void so_trata_page_fault(so_t *self)
-{
-  console_printf("SO: falha de página não tratada");
-  self->erro_interno = true;
 }
 
 
@@ -978,17 +1043,9 @@ static void so_chamada_mata_proc(so_t *self)
   if (proc_alvo->estado == P_PRONTO) {
     desenfileira(self->fila_prontos, proc_alvo->pid);
   }
-
-  /* // remove da tabela e libera a memória
-  for (int i = 0; i < MAX_PROCESSES; i++){
-    if (self->tabela_de_processos[i] == proc_alvo){
-      //SALVA MÉTRICAS ANTES DO FREE 
-      so_salva_metricas_finais(self, proc_alvo);
-      free(proc_alvo);
-      self->tabela_de_processos[i] = NULL;
-      break;
-    }
-  } */
+  //destuir tabela de pg do processo 
+  tabpag_t* tabela_pg = proc_alvo->tabela_paginas;
+  tabpag_destroi(tabela_pg);
 
   // se matou a si mesmo, não há processo corrente
   if (matando_a_si_mesmo){
@@ -1079,6 +1136,14 @@ static int so_carrega_programa(so_t *self, pcb* processo,
   return end_carga;
 }
 
+static void so_inicializa_bloco_fisico(so_t *self, int end_ini, int end_fim, int pid){
+  for(int end = 0; end < end_fim; end+= TAM_PAGINA){
+    self->blocos_memoria[end / TAM_PAGINA].pid = pid;
+    self->blocos_memoria[end / TAM_PAGINA].ocupado = true;
+
+  }
+}
+
 static int so_carrega_programa_na_memoria_fisica(so_t *self, programa_t *programa)
 {
   int end_ini = prog_end_carga(programa);
@@ -1090,10 +1155,13 @@ static int so_carrega_programa_na_memoria_fisica(so_t *self, programa_t *program
       return -1;
     }
   }
-
+  so_inicializa_bloco_fisico(self, end_ini, end_fim, 0); // pid 0 para SO
+  //0 pq é o trata_int.maq que carrega os processos
   console_printf("SO: carga na memória física %d-%d", end_ini, end_fim);
   return end_ini;
 }
+
+
 
 static int so_carrega_programa_na_memoria_virtual(so_t *self,
                                                   programa_t *programa,
@@ -1108,9 +1176,9 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   //   colocadas na memória principal por demanda. Para simplificar ainda mais, a
   //   memória secundária pode ser alocada da forma como a principal está sendo
   //   alocada aqui (sem reuso)
-  int end_virt_ini = prog_end_carga(programa);
+  //int end_virt_ini = prog_end_carga(programa);
   // o código abaixo só funciona se o programa iniciar no início de uma página
-  if ((end_virt_ini % TAM_PAGINA) != 0) return -1;
+  /* if ((end_virt_ini % TAM_PAGINA) != 0) return -1;
   int end_virt_fim = end_virt_ini + prog_tamanho(programa) - 1;
   int pagina_ini = end_virt_ini / TAM_PAGINA;
   int pagina_fim = end_virt_fim / TAM_PAGINA;
@@ -1121,21 +1189,26 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   for (int i = 0; i < n_paginas; i++) {
     tabpag_define_quadro(self->tabpag_global, pagina_ini + i, quadro_ini + i);
   }
-  self->quadro_livre = quadro_fim + 1;
+  self->quadro_livre = quadro_fim + 1; */
 
-  // carrega o programa na memória principal
-  int end_fis_ini = quadro_ini * TAM_PAGINA;
+  // carrega o programa na memória secundaria
+  
+  int end_fis_ini = self->bloco_livre;
   int end_fis = end_fis_ini;
+  int end_virt_ini = 0;
+  int end_virt_fim = end_virt_ini + prog_tamanho(programa) - 1;
+
   for (int end_virt = end_virt_ini; end_virt <= end_virt_fim; end_virt++) {
-    if (mem_escreve(self->mem, end_fis, prog_dado(programa, end_virt)) != ERR_OK) {
+    if (mem_escreve(self->mem_fisica, end_fis, prog_dado(programa, end_virt)) != ERR_OK) {
       console_printf("Erro na carga da memória, end virt %d fís %d\n", end_virt,
                      end_fis);
       return -1;
     }
     end_fis++;
   }
-  console_printf("SO: carga na memória virtual V%d-%d F%d-%d npag=%d",
-                 end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, n_paginas);
+  int num_paginas = (end_virt_fim - end_virt_ini ) / TAM_PAGINA; //acho q ta errado
+  console_printf("SO: carga na memória secundaria V%d-%d F%d-%d npag=%d",
+                 end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, num_paginas);
   return end_virt_ini;
 }
 

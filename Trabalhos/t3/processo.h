@@ -61,6 +61,7 @@ typedef struct {
     int tempo_total_resposta_pos_bloqueio;// soma dos tempos de resposta pós bloqueio
     int num_respostas_pos_bloqueio; // N. de vezes que foi de BLOQUEADO -> PRONTO 
     tabpag_t* tabela_paginas; // tabela de páginas do processo
+    int end_disco; // índice do bloco de memória onde está o código do processo
 } pcb;
 
 //a struct que guardará as métricas finais, é um histórico de processos finalizados
