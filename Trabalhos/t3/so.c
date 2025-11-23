@@ -1,4 +1,7 @@
-
+// so.c
+// sistema operacional
+// simulador de computador
+// so25b
 
 // ---------------------------------------------------------------------
 // INCLUDES {{{1
@@ -444,87 +447,90 @@ static int pag_livre(so_t *self) {
     }
     return -1; // Nenhuma página livre
 }
+
+/* page_fault_tratavel: depois de definir o quadro na tabela de páginas,
+   instala a tabela na MMU imediatamente e imprime dump curto para debug. */
 static void page_fault_tratavel(so_t *self, int end_causador)
 {
-  // implementar troca de páginas
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
   int pg_livre = pag_livre(self);
-  if (pg_livre < 0)
-  {
+  if (pg_livre < 0) {
     console_printf("SO: nenhuma página física livre para swap-in");
     self->erro_interno = true;
     return;
   }
-  int end_disk_ini = proc_corrente->end_disco + end_causador - end_causador % TAM_PAGINA;
-  int end_disk = end_disk_ini;
-  console_printf("SO: end disk = %d", end_disk);
-  int end_virt_ini = end_causador;
-  int end_virt_fim = end_virt_ini + TAM_PAGINA - 1;
-  for (int end_virt = end_virt_ini; end_virt <= end_virt_fim; end_virt++)
-  {
+
+  int inicio_pagina_virtual = end_causador - (end_causador % TAM_PAGINA);
+  int ini_end_fisico = proc_corrente->end_disco + inicio_pagina_virtual; // endereço em mem_fisica
+  console_printf("SO: carregando página do disco, início em %d (pg_livre=%d, pag_virt=%d)", ini_end_fisico, pg_livre, inicio_pagina_virtual / TAM_PAGINA);
+
+  for (int offset = 0; offset < TAM_PAGINA; offset++) {
     int dado;
-
-    if (mem_le(self->mem_fisica, end_disk, &dado) != ERR_OK)
-    {
-
-      console_printf("Erro na leitura no tratamento de page fault");
-
+    if (mem_le(self->mem_fisica, ini_end_fisico + offset, &dado) != ERR_OK) {
+      console_printf("SO: erro na leitura da memória física durante troca de página (addr %d)", ini_end_fisico + offset);
+      self->erro_interno = true;
       return;
     }
-
-    int physical_target_address = pg_livre * TAM_PAGINA + (end_virt - end_virt_ini);
-
-    if (mem_escreve(self->mem, physical_target_address, dado) != ERR_OK)
-    {
-
-      console_printf("Erro na escrita no tratamento de page fault");
-
+    int quadro_fisico_addr = pg_livre * TAM_PAGINA + offset;
+    if (mem_escreve(self->mem, quadro_fisico_addr, dado) != ERR_OK) {
+      console_printf("SO: erro na escrita da memória principal durante troca de página (addr %d)", quadro_fisico_addr);
+      self->erro_interno = true;
       return;
     }
-
-    // console_printf("SO: escrevi em end. %d aka página %d - virtual %d", physical_target_address, physical_target_address/TAM_PAGINA, end_causador/TAM_PAGINA);
-
-    end_disk++;
   }
+
+  // atualiza o controle de blocos e tabela de páginas
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
-
   tabpag_t *tabela = proc_corrente->tabela_paginas;
-  tabpag_define_quadro(tabela, end_causador/TAM_PAGINA, pg_livre);
-  console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_corrente->pid, end_virt_ini / TAM_PAGINA, pg_livre);
+  int pagina = inicio_pagina_virtual / TAM_PAGINA;
+  tabpag_define_quadro(tabela, pagina, pg_livre);
+
+  // IMPORTANTE: informar a MMU imediatamente para evitar janela de inconsistência
+  mmu_define_tabpag(self->mmu, tabela);
+
+  // limpar o erro no contexto do processo (para que não seja reprocessado)
+  proc_corrente->ctx_cpu.erro = ERR_OK;
+  proc_corrente->ctx_cpu.complemento = 0;
+  console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_corrente->pid, pagina, pg_livre);
+
+  // Debug: verificar tradução e imprimir alguns bytes
+  int quadro_test, r = tabpag_traduz(tabela, pagina, &quadro_test);
+  console_printf("DBG: tabpag_traduz pós-define: r=%d quadro=%d (esperado=%d)", r, quadro_test, pg_livre);
+  for (int o = 0; o < 8; o++) {
+    int vram = 0, vdisk = 0;
+    (void)mem_le(self->mem, pg_livre * TAM_PAGINA + o, &vram);
+    (void)mem_le(self->mem_fisica, proc_corrente->end_disco + inicio_pagina_virtual + o, &vdisk);
+    console_printf("DBG: offset %d: RAM=%02x DISK=%02x", o, vram, vdisk);
+  }
 }
 
+/* so_trata_page_fault: não trate tabpag_traduz()==ERR_OK como ERRO_GRAVE.
+   Se já estiver mapeada, apenas retorna (nada a fazer). */
 static void so_trata_page_fault(so_t *self)
 {
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
   int end_causador = proc_corrente->ctx_cpu.complemento;
-  // 1. Verifica se a página já está mapeada
-  int quadro;
-  tabpag_t *tabela = proc_corrente->tabela_paginas;
   int pagina_virtual = end_causador / TAM_PAGINA;
+  tabpag_t *tabela = proc_corrente->tabela_paginas;
+  int quadro;
   if (tabpag_traduz(tabela, pagina_virtual, &quadro) == ERR_OK) {
-    // Caso não seja end_causador=0, é um erro real de MMU/Estado do processo.
-    console_printf("SO: ERRO GRAVE - Falha de página em página %d já mapeada para QF %d (end %d)", pagina_virtual, quadro, end_causador);
-    //self->erro_interno = true;
+    //ja esdta mapeada
+    console_printf("SO: page fault para página %d, mas já mapeada para quadro %d — ignorando", pagina_virtual, quadro);
     return;
   }
-  
-  // 2. Se a página não está mapeada (tratamento real de PF)
-  console_printf("SO: tratando page fault para endereço %d", end_causador);
-  bool existe = false;
-  for(size_t i=0; i<self->num_paginas_fisicas; i++) {
-    if(!self->blocos_memoria[i].ocupado) {
-      existe = true;
-      break;
-    }
+
+  console_printf("SO: tratando page fault para endereço %d (pagina %d)", end_causador, pagina_virtual);
+  bool existe_quadro_livre = false;
+  for (size_t i = 0; i < self->num_paginas_fisicas; i++) {
+    if (!self->blocos_memoria[i].ocupado) { existe_quadro_livre = true; break; }
   }
-  if(existe) {
+  if (existe_quadro_livre) {
     page_fault_tratavel(self, end_causador);
   } else {
     console_printf("SO: não há páginas livres para tratar o page fault");
     self->erro_interno = true;
   }
-
 }
 
 
@@ -651,9 +657,6 @@ static void so_trata_reset(so_t *self)
   int tempo_atual = so_tempo_total(self); // Tempo é 0
   inicializa_metricas_pcb(processo_inicial, tempo_atual);
   so_muda_estado(self, processo_inicial, P_PRONTO); //substitui processo_inicial->estado = P_PRONTO
-    // passa o processador para modo usuário
-
-  //mem_escreve(self->mem, IRQ_END_modo, usuario);
   // coloca init na fila de prontos
   enfileira(self->fila_prontos, processo_inicial->pid);
   self->metricas->num_proc_criados++;
@@ -1033,15 +1036,13 @@ static void so_chamada_cria_proc(so_t *self)
       // t2: deveria escrever no PC do descritor do processo criado
       // self->regPC = ender_carga;
     }
-
-    ///////TESTE////////////
-    // 1. Encontrar um quadro físico livre na memória principal (RAM)
+   /*  // 1. Encontrar um quadro físico livre na memória principal (RAM)
     int quadro_livre_principal = pag_livre(self); // Sua função pag_livre busca um índice em self->blocos_memoria
     
     if (quadro_livre_principal == -1) {
       console_printf("SO: Sem quadros físicos livres para o novo processo!");
       libera_terminal(self, novo_processo->pid); // Assume que você tem uma função so_libera_terminal
-      //imnplementar swap? 
+      // Aqui, você pode querer implementar SWAPPING ou simplesmente falhar a criação.
       processo_criador->ctx_cpu.regA = -1; 
       // Não é elegante, mas para este nível de simulação, a falha é aceitável.
       return;
@@ -1075,7 +1076,7 @@ static void so_chamada_cria_proc(so_t *self)
     // 4. Marcar o quadro físico como ocupado
     self->blocos_memoria[quadro_livre_principal].ocupado = true;
     self->blocos_memoria[quadro_livre_principal].pid = novo_processo->pid;
-    console_printf("SO: Página inicial do processo %d carregada na RAM no quadro físico %d.", novo_processo->pid, quadro_livre_principal);
+ */
    // console_printf("SO: Primeira página do processo %d carregada e mapeada para QF %d.", novo_processo->pid, quadro_livre_principal);
     // marca o terminal como usado com o pid do processo que está usando
     self->terminais_usados[terminal_id] = novo_processo->pid;
@@ -1225,8 +1226,6 @@ static int so_carrega_programa(so_t *self, pcb* processo,
     // definir processo->end_disco (endereço físico em mem_fisica) e retornar
     // o endereço virtual inicial (tipicamente 0)
     end_carga = so_carrega_programa_na_memoria_virtual(self, programa, processo);
-    processo->end_disco = end_carga; // salvo para uso futuro
-    end_carga = 0; // programas carregados em memória virtual sempre começam em 0
   }
 
   prog_destroi(programa);
@@ -1297,12 +1296,10 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   
   int end_fis_ini = self->bloco_livre;        // endereço físico em mem_fisica onde começamos a escrever
   int end_fis = end_fis_ini;
-
   int end_virt_ini = 0;
   int prog_tamanho_bytes = prog_tamanho(programa);
   int end_virt_fim = end_virt_ini + prog_tamanho_bytes - 1;
 
-  self->bloco_livre = end_fis_ini + end_virt_fim + 1; // reserva o espaço na memória física (disco simulado)
   // escreve o programa em mem_fisica (disco simulado) a partir de end_fis_ini
   for (int end_virt = end_virt_ini; end_virt <= end_virt_fim; end_virt++) {
     if (mem_escreve(self->mem_fisica, end_fis, prog_dado(programa, end_virt)) != ERR_OK) {
@@ -1323,7 +1320,7 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   int num_paginas = (end_virt_fim - end_virt_ini) / TAM_PAGINA + 1;
   console_printf("SO: carga na memória secundaria V%d-%d F%d-%d npag=%d",
                  end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, num_paginas);
-  return end_fis_ini;
+  return end_virt_ini;
 }
 
 
@@ -1347,12 +1344,7 @@ static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
     //   os endereços e acessar a memória, porque todo o conteúdo do processo
     //   está na memória principal, e só temos uma tabela de páginas
     if (mmu_le(self->mmu, end_virt + indice_str, &caractere, usuario) != ERR_OK) {
-      //return false;
-      // se não está na memória principal, busca na memória secundária (disco)
-
-
-      pcb* corrente = self->tabela_de_processos[self->processo_corrente];
-      mem_le(self->mem_fisica,corrente->end_disco + end_virt + indice_str, &caractere);
+      return false;
     }
     if (caractere < 0 || caractere > 255) {
       return false;
