@@ -56,6 +56,7 @@
 define NENHUM_PROCESSO -1
 #define ALGUM_PROCESSO 0 */
 #define NENHUM_PROCESSO NULL
+#define ALG_SUBSTITUICAO 0 //escolher algoritmo de substituição de páginas (0 = FIFO, 1 = LRU)
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -447,6 +448,114 @@ static int pag_livre(so_t *self) {
     }
     return -1; // Nenhuma página livre
 }
+//////////////// ALGORITIMOS DE SUBSTITUIÇÃO DE PÁGINAS /////////////////
+// FIFO: escolhe a página que está na memória há mais tempo
+static int escolhe_pagina_fifo(so_t *self) {
+  int max_ciclos = -1;
+  int pagina_escolhida = -1;
+  int ciclo_atual; //ciclos lidos do relógio
+  if(es_le(self->es, D_RELOGIO_INSTRUCOES, &ciclo_atual) != ERR_OK){
+    console_printf("SO: erro ao ler ciclos para escolha de página FIFO");
+    self->erro_interno = true;
+    return -1;
+  }
+
+  //começar em 2 pq os dois primeiros blocos são reservados para o SO
+  //procura a página com maior valor de ciclos (mais antiga)
+  for (size_t i = 2; i < self->num_paginas_fisicas; i++) {
+    int ciclicos_pg = ciclo_atual - self->blocos_memoria[i].ciclos; //quanto maior, mais tempo está na memória
+    if (ciclicos_pg > max_ciclos) { //encontrou a página mais antiga
+      max_ciclos = ciclicos_pg;
+      pagina_escolhida = i;
+    }
+  }
+  return pagina_escolhida;
+}
+
+static int escolher_alg_subst(so_t *self) {
+  if (ALG_SUBSTITUICAO == 0) {
+    return escolhe_pagina_fifo(self);
+  }
+  
+}
+
+
+
+static void swap(so_t * self, int end_causador){
+  int pg_a_substituir = escolher_alg_subst(self);
+  pcb* proc_sai = self->tabela_de_processos[self->blocos_memoria[pg_a_substituir].pid];
+  pcb* proc_entra = self->tabela_de_processos[self->processo_corrente];
+  if(pg_a_substituir < 0){
+    console_printf("SO: erro ao escolher página para substituição (escolhe_pagina_fifo)");
+    return;
+  }
+
+  if(proc_entra!=NULL){
+    //tratar alteração dos dados (writeback, tem que escrever a página de volta pro disco)
+    //só escreve as alterações no disco se a página foi modificada (bit de alteracao) e 
+    //se ela tiver que sair da memória principal
+    tabpag_t *tab_pag_sai = proc_sai->tabela_paginas;
+    int pg_virt_sai = self->blocos_memoria[pg_a_substituir].pg;
+    int end_disco_sai = proc_sai->end_disco + (pg_virt_sai * TAM_PAGINA); //endereço em mem_fisica onde
+
+    if(tabpag_bit_alteracao(tab_pag_sai, pg_virt_sai)){
+      console_printf("SO: página %d do processo %d foi alterada, escrevendo de volta para o disco", pg_virt_sai, proc_sai->pid);
+      //escrever a página de volta pro disco
+      for(int offset = 0; offset < TAM_PAGINA; offset++){
+        int dado;
+        int quadro_fisico_addr = pg_a_substituir * TAM_PAGINA + offset;
+        if(mem_le(self->mem, quadro_fisico_addr, &dado) != ERR_OK){
+          console_printf("SO: erro na leitura da memória principal durante swap-out (addr %d)", quadro_fisico_addr);
+          self->erro_interno = true;
+          return;
+        }
+        if(mem_escreve(self->mem_sec, end_disco_sai + offset, dado) != ERR_OK){
+          console_printf("SO: erro na escrita da memória física durante swap-out (addr %d)", end_disco_sai + offset);
+          self->erro_interno = true;
+          return;
+        }
+      }
+    }
+
+    console_printf("SO: substituindo página %d do processo %d (quadro físico %d)", pg_virt_sai, proc_sai->pid, pg_a_substituir);
+    //atualiza a tabela de páginas do processo que está saindo
+    tabpag_invalida_pagina(tab_pag_sai, pg_virt_sai);
+  }
+  
+  int end_disc_ini = proc_entra->end_disco + (end_causador - (end_causador % TAM_PAGINA));
+  //lendo a pg 
+  for(int i=0; i < TAM_PAGINA; i++){
+    int dado;
+    if(mem_le(self->mem_sec, end_disc_ini + i, &dado) != ERR_OK){
+      console_printf("SO: erro na leitura da memória física durante swap-in (addr %d)", end_disc_ini + i);
+      self->erro_interno = true;
+      return;
+    }
+    int quadro_fisico_end = pg_a_substituir * TAM_PAGINA + i;
+    if(mem_escreve(self->mem, quadro_fisico_end, dado) != ERR_OK){
+      console_printf("SO: erro na escrita da memória principal durante swap-in (addr %d)", quadro_fisico_end);
+      self->erro_interno = true;
+      return;
+    }
+  }
+  self->blocos_memoria[pg_a_substituir].ocupado = true;
+  self->blocos_memoria[pg_a_substituir].pg = end_causador / TAM_PAGINA;
+  self->blocos_memoria[pg_a_substituir].pid = proc_entra->pid;
+
+  if(es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_a_substituir].ciclos) != ERR_OK){
+    console_printf("SO: erro ao ler ciclos para página alocada");
+    self->erro_interno = true;
+    return;
+  }
+
+  tabpag_t *tabela_proc_entra = proc_entra->tabela_paginas;
+  tabpag_define_quadro(tabela_proc_entra, end_causador / TAM_PAGINA, pg_a_substituir);
+  console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_entra->pid, end_causador / TAM_PAGINA, pg_a_substituir);
+  
+}
+
+
+
 
 //page_fault_tratavel usa agora proc->end_disco (físico) para calcular a posição 
 //correta em mem_fisica a ser lida e copiar para um quadro físico livre 
@@ -483,6 +592,13 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   // atualiza o controle de blocos e tabela de páginas
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
+  self->blocos_memoria[pg_livre].pg = end_causador / TAM_PAGINA;
+
+  if(es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_livre].ciclos) != ERR_OK){
+    console_printf("SO: erro ao ler ciclos para página alocada");
+    self->erro_interno = true;
+    return;
+  }
   tabpag_t *tabela = proc_corrente->tabela_paginas;
   int pagina = inicio_pagina_virtual / TAM_PAGINA;
   tabpag_define_quadro(tabela, pagina, pg_livre);
@@ -528,8 +644,10 @@ static void so_trata_page_fault(so_t *self)
   if (existe_quadro_livre) {
     page_fault_tratavel(self, end_causador);
   } else {
-    console_printf("SO: não há páginas livres para tratar o page fault");
-    self->erro_interno = true;
+    console_printf("SO: não há páginas livres para tratar o page fault, realizando swap");
+    console_printf("algoritmo de substituição: %d", ALG_SUBSTITUICAO);
+    swap(self, end_causador);
+    
   }
 }
 
@@ -1226,7 +1344,7 @@ static int so_carrega_programa(so_t *self, pcb* processo,
     // definir processo->end_disco (endereço físico em mem_fisica) e retornar
     // o endereço virtual inicial (tipicamente 0)
     end_carga = so_carrega_programa_na_memoria_virtual(self, programa, processo);
-    end_carga = 0;
+    end_carga = 0; // end_carga virtual sempre começa em 0
   }
   
   prog_destroi(programa);
@@ -1296,9 +1414,10 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
 
   // carrega o programa na memória secundaria
   
-  int end_fis_ini = self->bloco_livre;        // endereço físico em mem_sec onde começamos a escrever
+  int end_fis_ini = self->bloco_livre;//onde o conteúdo está guardado no disco
   int end_fis = end_fis_ini;
-  int end_virt_ini = 0;
+  int end_virt_ini = 0; //onde o conteúdo deve existir no espaço virtual do processo
+  //o dispatcher e o próprio processo precisam do end_virt_ini para inicializar o PC do processo.
   int prog_tamanho_bytes = prog_tamanho(programa);
   int end_virt_fim = end_virt_ini + prog_tamanho_bytes - 1;
 
@@ -1313,7 +1432,7 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   }
 
   // atualiza o bloco_livre para apontar para a próxima posição livre em mem_fisica
-  self->bloco_livre = end_fis_ini + end_virt_fim +1;
+  self->bloco_livre = end_fis;
 
   // salva para o processo o endereço físico inicial em mem_fisica (onde o programa foi colocado)
   processo->end_disco = end_fis_ini;
@@ -1323,6 +1442,8 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   console_printf("SO: carga na memória secundaria V%d-%d F%d-%d npag=%d",
                  end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, num_paginas);
   //return end_virt_ini;
+  //se retornasse end_virt_ini, seria sempre 0, então simplifico retornando 0 direto
+  // em so_carrega_programa
   return end_fis_ini;
 }
 
