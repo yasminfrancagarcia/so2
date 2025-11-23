@@ -6,7 +6,7 @@
 bloco_t* cria_bloco(int tamanho){
     bloco_t* bloco = (bloco_t*) malloc (tamanho * sizeof(bloco ));
     for(int i = 0; i < tamanho; i++){
-        if(i< 1){
+        if(i< 10){
             bloco[i].ocupado = true;
             bloco[i].pid = 0; //bloco 0 reservado para o SO
         } else{

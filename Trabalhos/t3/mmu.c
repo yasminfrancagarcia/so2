@@ -4,6 +4,7 @@
 // so25b
 
 #include "mmu.h"
+#include "console.h"
 #include <stdlib.h>
 #include <assert.h>
 

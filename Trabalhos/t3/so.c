@@ -200,18 +200,24 @@ static int so_trata_interrupcao(void *argC, int reg_A)
   so_t *self = argC;
   irq_t irq = reg_A;
   // ATUALIZAÇÃO DE TEMPOS (Métricas 3 e 9)
+  console_printf("SO: Atualizando tempos antes de tratar IRQ %d", irq);
   so_atualiza_tempos(self); 
   // esse print polui bastante, recomendo tirar quando estiver com mais confiança
-  console_printf("SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
+  //console_printf("SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
   // métrica 4: Contagem de Interrupções (feita em so_trata_irq
   // salva o estado da cpu no descritor do processo que foi interrompido
+  console_printf("SO: salvando estado da CPU antes de tratar IRQ %d", irq);
   so_salva_estado_da_cpu(self);
   // faz o atendimento da interrupção
+  console_printf("SO: tratando IRQ %d", irq);
   so_trata_irq(self, irq);
   // faz o processamento independente da interrupção
+  console_printf("SO: tratando pendências após IRQ %d", irq);
   so_trata_pendencias(self);
   // escolhe o próximo processo a executar
+  console_printf("SO: escalonando após IRQ %d", irq);
   so_escalona(self);
+  console_printf("escalonou");
   // recupera o estado do processo escolhido
   return so_despacha(self);
 }
@@ -243,6 +249,7 @@ static void so_salva_estado_da_cpu(so_t *self)
     contexto.regA = self->regA;
     contexto.regX = self->regX;
     contexto.erro = self->regERRO;
+    contexto.complemento = self->regComplemento;
     self->tabela_de_processos[self->processo_corrente]->ctx_cpu = contexto;
   }
 
@@ -421,6 +428,13 @@ static int so_despacha(so_t *self)
   mem_escreve(self->mem, CPU_END_complemento, contexto.complemento); // limpa complemento
   // define a tabela de páginas do processo corrente na MMU
   mmu_define_tabpag(self->mmu, self->tabela_de_processos[self->processo_corrente]->tabela_paginas);
+
+  int q;
+  int err = tabpag_traduz(self->tabela_de_processos[self->processo_corrente]->tabela_paginas, contexto.pc/TAM_PAGINA, &q);
+  console_printf("Espero ler instrução do quadro físico %d, traduzido da página virtual %d", q, contexto.pc/TAM_PAGINA);
+  console_printf("Erro foi: %d. ERR_OK é %d", err, ERR_OK);
+  console_printf("Processo = #%d", self->tabela_de_processos[self->processo_corrente]->pid);
+
   if (self->erro_interno)
     return 1;
   else
@@ -442,8 +456,9 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   // implementar troca de páginas
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
   int pg_livre = pag_livre(self);
-  int ini_end_fisico = proc_corrente->end_disco;
+  int ini_end_fisico = proc_corrente->end_disco + end_causador - end_causador % TAM_PAGINA;
   int end_disco = ini_end_fisico;
+  console_printf("SO: carregando página do disco, início em %d", end_disco);
 
   int ini_end_virtual = end_causador;
   int fim_end_virtual = ini_end_virtual + TAM_PAGINA - 1;
@@ -470,13 +485,29 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
   tabpag_t *tabela = proc_corrente->tabela_paginas;
-  tabpag_define_quadro(tabela, end_causador / 10, pg_livre);
+  tabpag_define_quadro(tabela, end_causador / TAM_PAGINA, pg_livre);
   console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_corrente->pid, end_causador / 10, pg_livre);
 }
 
 static void so_trata_page_fault(so_t *self)
 {
-  int end_causador = self->tabela_de_processos[self->processo_corrente]->ctx_cpu.complemento;
+  pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+  int end_causador = proc_corrente->ctx_cpu.complemento;
+  // 1. Verifica se a página já está mapeada
+  int quadro;
+  tabpag_t *tabela = proc_corrente->tabela_paginas;
+  int pagina_virtual = end_causador / TAM_PAGINA;
+  if (tabpag_traduz(tabela, pagina_virtual, &quadro) == ERR_OK) {
+    
+    
+
+    // Caso não seja end_causador=0, é um erro real de MMU/Estado do processo.
+    console_printf("SO: ERRO GRAVE - Falha de página em página %d já mapeada para QF %d (end %d)", pagina_virtual, quadro, end_causador);
+    self->erro_interno = true;
+    return;
+  }
+  
+  // 2. Se a página não está mapeada (tratamento real de PF)
   console_printf("SO: tratando page fault para endereço %d", end_causador);
   bool existe = false;
   for(size_t i=0; i<self->num_paginas_fisicas; i++) {
@@ -544,6 +575,8 @@ static void so_trata_reset(so_t *self)
   //   de interrupção (escrito em asm). esse programa deve conter a
   //   instrução CHAMAC, que vai chamar so_trata_interrupcao (como
   //   foi definido na inicialização do SO)
+  console_printf("SO: carregando programa de tratamento de interrupção");
+
   int ender = so_carrega_programa(self, NENHUM_PROCESSO, "trata_int.maq");
   if (ender != CPU_END_TRATADOR) {
     console_printf("SO: problema na carga do programa de tratamento de interrupção");
@@ -574,7 +607,6 @@ static void so_trata_reset(so_t *self)
 
 
   /// processos
-  /// processos
   // inicializa a tabela de processos
   // tabela_de_processos já é um array fixo, não precisa de malloc
   for (int i = 0; i < MAX_PROCESSES; i++)
@@ -584,6 +616,7 @@ static void so_trata_reset(so_t *self)
 
   // coloca o programa init na memória
   // coloca o endereço do programa init np primeiro processo
+  console_printf("SO: criando processo inicial (init)");
   pcb *processo_inicial = criar_processo( D_TERM_A_TECLADO, D_TERM_A_TELA);
   console_printf("SO: processo inicial criado com PID %d ", processo_inicial->pid);
   ender = so_carrega_programa(self, processo_inicial,"init.maq");
@@ -598,7 +631,7 @@ static void so_trata_reset(so_t *self)
   // marcar o terminal usado
   self->terminais_usados[0] = processo_inicial->pid;
   self->tabela_de_processos[0] = processo_inicial;
-  self->processo_corrente = NO_PROCESS; // índice do processo inicial na tabela
+  self->processo_corrente = 0; // índice do processo inicial na tabela
 
   // altera o PC para o endereço de carga
   // self->regPC = ender; // deveria ser no processo
@@ -662,20 +695,32 @@ static void so_trata_irq_err_cpu(so_t *self)
   {
     pcb *proc = self->tabela_de_processos[self->processo_corrente];
     err_t erro = proc->ctx_cpu.erro;
-    if(erro == ERR_PAG_AUSENTE) {
-      console_printf ("SO: processo %d causou uma falha de página", proc->pid);
+    int complemento = proc->ctx_cpu.complemento;
+    console_printf("SO: Erro de CPU detectado: Código %d. Complemento %d. PC %d.", 
+                 erro, complemento, proc->ctx_cpu.pc); // ADICIONE ESTE PRINT
+    if (erro == ERR_PAG_AUSENTE)
+    {
+      console_printf("SO: processo %d causou uma falha de página", proc->pid);
       so_trata_page_fault(self);
-    }else{
+    }
+    else if (erro == ERR_INSTR_INV)
+    {
+      console_printf("INSTRUCÃO INVÁLIDA executada pelo processo %d", proc->pid);
+      int v;
+      mmu_le(self->mmu, 0, &v, usuario);
+      console_printf("SO: %d", v);
+    }
+    else
+    {
       console_printf("SO: erro na CPU do processo %d: %s", proc->pid, err_nome(erro));
       so_acorda_processos_esperando(self, proc->pid); // acorda processos esperando esse processo
       proc->usando = 0;
-      //proc->estado = P_TERMINOU;
+      // proc->estado = P_TERMINOU;
       so_muda_estado(self, proc, P_TERMINOU); // usa a função que contabiliza métricas
-      self->processo_corrente = NO_PROCESS; // nenhum processo está executando
-      libera_terminal(self, proc->pid);     // libera o terminal usado pelo processo
+      self->processo_corrente = NO_PROCESS;   // nenhum processo está executando
+      libera_terminal(self, proc->pid);       // libera o terminal usado pelo processo
       console_printf("SO: IRQ TRATADA -- erro na CPU: %s", err_nome(erro));
     }
-    
   }
 }
 
@@ -984,7 +1029,48 @@ static void so_chamada_cria_proc(so_t *self)
       // t2: deveria escrever no PC do descritor do processo criado
       // self->regPC = ender_carga;
     }
+   /*  // 1. Encontrar um quadro físico livre na memória principal (RAM)
+    int quadro_livre_principal = pag_livre(self); // Sua função pag_livre busca um índice em self->blocos_memoria
     
+    if (quadro_livre_principal == -1) {
+      console_printf("SO: Sem quadros físicos livres para o novo processo!");
+      libera_terminal(self, novo_processo->pid); // Assume que você tem uma função so_libera_terminal
+      // Aqui, você pode querer implementar SWAPPING ou simplesmente falhar a criação.
+      processo_criador->ctx_cpu.regA = -1; 
+      // Não é elegante, mas para este nível de simulação, a falha é aceitável.
+      return;
+    }
+    
+    // 2. O endereço de início no "disco" é end_disco (salvo em so_carrega_programa_na_memoria_virtual)
+    int end_disco_pg0 = novo_processo->end_disco + (ender_carga / TAM_PAGINA) * TAM_PAGINA; 
+    int end_fisico_principal = quadro_livre_principal * TAM_PAGINA;
+
+    // Copiar a primeira página (simulando a primeira carga)
+    for (int offset = 0; offset < TAM_PAGINA; offset++) {
+      int dado;
+      // Leitura do "disco" (self->mem_fisica)
+      if (mem_le(self->mem_fisica, end_disco_pg0 + offset, &dado) != ERR_OK) {
+         console_printf("SO: Erro na leitura do disco simulado ao criar processo.");
+         // ... tratamento de erro e liberação de quadro ...
+         return;
+      }
+      // Escrita na memória principal (self->mem)
+      if (mem_escreve(self->mem, end_fisico_principal + offset, dado) != ERR_OK) {
+         console_printf("SO: Erro na escrita da RAM ao criar processo.");
+         // ... tratamento de erro e liberação de quadro ...
+         return;
+      }
+    }
+    
+    // 3. Mapear na tabela de páginas
+    int pg_virt_inicial = ender_carga / TAM_PAGINA; // Geralmente 0
+    tabpag_define_quadro(novo_processo->tabela_paginas, pg_virt_inicial, quadro_livre_principal);
+    
+    // 4. Marcar o quadro físico como ocupado
+    self->blocos_memoria[quadro_livre_principal].ocupado = true;
+    self->blocos_memoria[quadro_livre_principal].pid = novo_processo->pid;
+ */
+   // console_printf("SO: Primeira página do processo %d carregada e mapeada para QF %d.", novo_processo->pid, quadro_livre_principal);
     // marca o terminal como usado com o pid do processo que está usando
     self->terminais_usados[terminal_id] = novo_processo->pid;
     self->tabela_de_processos[possivel_indice] = novo_processo; // colocar o processo na tabela
@@ -1130,6 +1216,7 @@ static int so_carrega_programa(so_t *self, pcb* processo,
     end_carga = so_carrega_programa_na_memoria_fisica(self, programa);
   } else {
     end_carga = so_carrega_programa_na_memoria_virtual(self, programa, processo);
+    processo->end_disco = end_carga; // salvar o endereço na memória secundaria
   }
 
   prog_destroi(programa);
@@ -1196,7 +1283,9 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   int end_fis_ini = self->bloco_livre;
   int end_fis = end_fis_ini;
   int end_virt_ini = 0;
-  int end_virt_fim = end_virt_ini + prog_tamanho(programa) - 1;
+  int prog_tamanho_bytes = prog_tamanho(programa);
+  int end_virt_fim = end_virt_ini + prog_tamanho_bytes - 1;
+  self->bloco_livre = end_virt_fim + 1; // atualiza o próximo bloco livre na memória secundaria
 
   for (int end_virt = end_virt_ini; end_virt <= end_virt_fim; end_virt++) {
     if (mem_escreve(self->mem_fisica, end_fis, prog_dado(programa, end_virt)) != ERR_OK) {
@@ -1209,6 +1298,7 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   int num_paginas = (end_virt_fim - end_virt_ini ) / TAM_PAGINA; //acho q ta errado
   console_printf("SO: carga na memória secundaria V%d-%d F%d-%d npag=%d",
                  end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, num_paginas);
+  //processo->end_disco = end_fis_ini; // salvar o endereço na memória secundaria
   return end_virt_ini;
 }
 
