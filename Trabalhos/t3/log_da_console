@@ -180,6 +180,7 @@ SO: chamada de sistema 2
 Espero ler instrução do quadro físico 14, traduzido da página virtual 16
 Erro foi: 0. ERR_OK é 0
 Processo = #1
+CMD: 'd0'
 SO: chamada de sistema 2
 Espero ler instrução do quadro físico 14, traduzido da página virtual 16
 Erro foi: 0. ERR_OK é 0
@@ -1658,7 +1659,6 @@ SO: chamada de sistema 2
 Espero ler instrução do quadro físico 28, traduzido da página virtual 16
 Erro foi: 0. ERR_OK é 0
 Processo = #2
-CMD: 'd0'
 SO: Erro de CPU detectado: Código 8. Complemento 50. PC 142.
 SO: processo 2 causou uma falha de página
 SO: tratando page fault para endereço 50 (pagina 5)
