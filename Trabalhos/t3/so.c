@@ -200,24 +200,24 @@ static int so_trata_interrupcao(void *argC, int reg_A)
   so_t *self = argC;
   irq_t irq = reg_A;
   // ATUALIZAÇÃO DE TEMPOS (Métricas 3 e 9)
-  console_printf("SO: Atualizando tempos antes de tratar IRQ %d", irq);
-  so_atualiza_tempos(self); 
+  //console_printf("SO: Atualizando tempos antes de tratar IRQ %d", irq);
+  //so_atualiza_tempos(self); 
   // esse print polui bastante, recomendo tirar quando estiver com mais confiança
   //console_printf("SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
   // métrica 4: Contagem de Interrupções (feita em so_trata_irq
   // salva o estado da cpu no descritor do processo que foi interrompido
-  console_printf("SO: salvando estado da CPU antes de tratar IRQ %d", irq);
+ // console_printf("SO: salvando estado da CPU antes de tratar IRQ %d", irq);
   so_salva_estado_da_cpu(self);
   // faz o atendimento da interrupção
-  console_printf("SO: tratando IRQ %d", irq);
+  //console_printf("SO: tratando IRQ %d", irq);
   so_trata_irq(self, irq);
   // faz o processamento independente da interrupção
-  console_printf("SO: tratando pendências após IRQ %d", irq);
+  //console_printf("SO: tratando pendências após IRQ %d", irq);
   so_trata_pendencias(self);
   // escolhe o próximo processo a executar
-  console_printf("SO: escalonando após IRQ %d", irq);
+  //console_printf("SO: escalonando após IRQ %d", irq);
   so_escalona(self);
-  console_printf("escalonou");
+ // console_printf("escalonou");
   // recupera o estado do processo escolhido
   return so_despacha(self);
 }
@@ -448,8 +448,9 @@ static int pag_livre(so_t *self) {
     return -1; // Nenhuma página livre
 }
 
-/* page_fault_tratavel: depois de definir o quadro na tabela de páginas,
-   instala a tabela na MMU imediatamente e imprime dump curto para debug. */
+//page_fault_tratavel usa agora proc->end_disco (físico) para calcular a posição 
+//correta em mem_fisica a ser lida e copiar para um quadro físico livre 
+//em mem principal.
 static void page_fault_tratavel(so_t *self, int end_causador)
 {
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
@@ -486,7 +487,7 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   int pagina = inicio_pagina_virtual / TAM_PAGINA;
   tabpag_define_quadro(tabela, pagina, pg_livre);
 
-  // IMPORTANTE: informar a MMU imediatamente para evitar janela de inconsistência
+  // informar a MMU imediatamente para evitar janela de inconsistência
   mmu_define_tabpag(self->mmu, tabela);
 
   // limpar o erro no contexto do processo (para que não seja reprocessado)
@@ -505,8 +506,7 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   }
 }
 
-/* so_trata_page_fault: não trate tabpag_traduz()==ERR_OK como ERRO_GRAVE.
-   Se já estiver mapeada, apenas retorna (nada a fazer). */
+
 static void so_trata_page_fault(so_t *self)
 {
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
@@ -1226,8 +1226,9 @@ static int so_carrega_programa(so_t *self, pcb* processo,
     // definir processo->end_disco (endereço físico em mem_fisica) e retornar
     // o endereço virtual inicial (tipicamente 0)
     end_carga = so_carrega_programa_na_memoria_virtual(self, programa, processo);
+    end_carga = 0;
   }
-
+  
   prog_destroi(programa);
   return end_carga;
 }
@@ -1311,7 +1312,7 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   }
 
   // atualiza o bloco_livre para apontar para a próxima posição livre em mem_fisica
-  self->bloco_livre = end_fis;
+  self->bloco_livre = end_fis_ini + end_virt_fim +1;
 
   // salva para o processo o endereço físico inicial em mem_fisica (onde o programa foi colocado)
   processo->end_disco = end_fis_ini;
@@ -1320,7 +1321,8 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   int num_paginas = (end_virt_fim - end_virt_ini) / TAM_PAGINA + 1;
   console_printf("SO: carga na memória secundaria V%d-%d F%d-%d npag=%d",
                  end_virt_ini, end_virt_fim, end_fis_ini, end_fis - 1, num_paginas);
-  return end_virt_ini;
+  //return end_virt_ini;
+  return end_fis_ini;
 }
 
 
@@ -1344,7 +1346,10 @@ static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
     //   os endereços e acessar a memória, porque todo o conteúdo do processo
     //   está na memória principal, e só temos uma tabela de páginas
     if (mmu_le(self->mmu, end_virt + indice_str, &caractere, usuario) != ERR_OK) {
-      return false;
+      //return false;
+      // se não está na memória principal, busca na memória secundária (disco)
+      pcb *proc = self->tabela_de_processos[self->processo_corrente];
+      mem_le(self->mem_fisica, proc->end_disco + end_virt + indice_str, &caractere);
     }
     if (caractere < 0 || caractere > 255) {
       return false;
