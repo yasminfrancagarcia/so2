@@ -98,7 +98,7 @@ static bool so_copia_str_do_processo(so_t *self, int tam, char str[tam],
 // CRIAÇÃO {{{1
 // ---------------------------------------------------------------------
 
-so_t *so_cria(cpu_t *cpu, mem_t *mem, mmu_t *mmu,
+so_t *so_cria(cpu_t *cpu, mem_t *mem, mem_t *mem_fisica, mmu_t *mmu,
               es_t *es, console_t *console)
 {
   so_t *self = malloc(sizeof(*self));
@@ -106,7 +106,7 @@ so_t *so_cria(cpu_t *cpu, mem_t *mem, mmu_t *mmu,
 
   self->cpu = cpu;
   self->mem = mem;
-  self->mem_fisica = mem_cria(FISICA_TAM);
+  self->mem_fisica = mem_fisica;
   self->mmu = mmu;
   self->es = es;
   self->console = console;
@@ -483,8 +483,24 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   // marca quadro físico ocupado e atualiza tabela de páginas
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
+  self->blocos_memoria[pg_livre].pg = end_causador / TAM_PAGINA;
+  if (es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_livre].ciclos) != ERR_OK){
+    console_printf("Erro crítico de atualização da memória");
+  }
   tabpag_t *tabela = proc_corrente->tabela_paginas;
   tabpag_define_quadro(tabela, inicio_pagina_virtual / TAM_PAGINA, pg_livre);
+    
+  int quadro_test;
+  int r = tabpag_traduz(tabela, inicio_pagina_virtual / TAM_PAGINA, &quadro_test);
+  console_printf("DBG: tabpag_traduz pós-define: r=%d quadro=%d (esperado=%d)", r, quadro_test, pg_livre);
+
+  // dump de alguns bytes escritos na RAM
+  for (int o = 0; o < 8; o++) {
+    int vram, vdisk;
+    mem_le(self->mem, pg_livre * TAM_PAGINA + o, &vram);
+    mem_le(self->mem_fisica, proc_corrente->end_disco + inicio_pagina_virtual + o, &vdisk);
+    console_printf("DBG: offset %d: RAM=%02x DISK=%02x", o, vram, vdisk);
+  }
   console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_corrente->pid, inicio_pagina_virtual / TAM_PAGINA, pg_livre);
 }
 
@@ -1024,13 +1040,15 @@ static void so_chamada_cria_proc(so_t *self)
       // t2: deveria escrever no PC do descritor do processo criado
       // self->regPC = ender_carga;
     }
-   /*  // 1. Encontrar um quadro físico livre na memória principal (RAM)
+
+    ///////TESTE////////////
+    // 1. Encontrar um quadro físico livre na memória principal (RAM)
     int quadro_livre_principal = pag_livre(self); // Sua função pag_livre busca um índice em self->blocos_memoria
     
     if (quadro_livre_principal == -1) {
       console_printf("SO: Sem quadros físicos livres para o novo processo!");
       libera_terminal(self, novo_processo->pid); // Assume que você tem uma função so_libera_terminal
-      // Aqui, você pode querer implementar SWAPPING ou simplesmente falhar a criação.
+      //imnplementar swap? 
       processo_criador->ctx_cpu.regA = -1; 
       // Não é elegante, mas para este nível de simulação, a falha é aceitável.
       return;
@@ -1064,7 +1082,7 @@ static void so_chamada_cria_proc(so_t *self)
     // 4. Marcar o quadro físico como ocupado
     self->blocos_memoria[quadro_livre_principal].ocupado = true;
     self->blocos_memoria[quadro_livre_principal].pid = novo_processo->pid;
- */
+    console_printf("SO: Página inicial do processo %d carregada na RAM no quadro físico %d.", novo_processo->pid, quadro_livre_principal);
    // console_printf("SO: Primeira página do processo %d carregada e mapeada para QF %d.", novo_processo->pid, quadro_livre_principal);
     // marca o terminal como usado com o pid do processo que está usando
     self->terminais_usados[terminal_id] = novo_processo->pid;
