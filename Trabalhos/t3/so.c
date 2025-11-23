@@ -489,7 +489,12 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   }
   tabpag_t *tabela = proc_corrente->tabela_paginas;
   tabpag_define_quadro(tabela, inicio_pagina_virtual / TAM_PAGINA, pg_livre);
-    
+  // instalar imediatamente a tabela na MMU para eliminar a janela de inconsistência
+  mmu_define_tabpag(self->mmu, tabela);
+
+  // limpar o erro no contexto do processo (para que não seja reprocessado)
+  proc_corrente->ctx_cpu.erro = ERR_OK;
+  proc_corrente->ctx_cpu.complemento = 0;
   int quadro_test;
   int r = tabpag_traduz(tabela, inicio_pagina_virtual / TAM_PAGINA, &quadro_test);
   console_printf("DBG: tabpag_traduz pós-define: r=%d quadro=%d (esperado=%d)", r, quadro_test, pg_livre);
@@ -515,7 +520,7 @@ static void so_trata_page_fault(so_t *self)
   if (tabpag_traduz(tabela, pagina_virtual, &quadro) == ERR_OK) {
     // Caso não seja end_causador=0, é um erro real de MMU/Estado do processo.
     console_printf("SO: ERRO GRAVE - Falha de página em página %d já mapeada para QF %d (end %d)", pagina_virtual, quadro, end_causador);
-    self->erro_interno = true;
+    //self->erro_interno = true;
     return;
   }
   
