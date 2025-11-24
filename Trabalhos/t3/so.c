@@ -450,7 +450,7 @@ static int pag_livre(so_t *self) {
 }
 //////////////// ALGORITIMOS DE SUBSTITUIÇÃO DE PÁGINAS /////////////////
 // FIFO: escolhe a página que está na memória há mais tempo
-static int escolhe_pagina_fifo(so_t *self) {
+/* static int escolhe_pagina_fifo(so_t *self) {
   int max_ciclos = -1;
   int pagina_escolhida = -1;
   int ciclo_atual; //ciclos lidos do relógio
@@ -553,7 +553,7 @@ static void swap(so_t * self, int end_causador){
   console_printf("SO: página trocada para o processo %d, página virtual %d mapeada para quadro físico %d", proc_entra->pid, end_causador / TAM_PAGINA, pg_a_substituir);
   
 }
-
+ */
 
 
 
@@ -646,7 +646,7 @@ static void so_trata_page_fault(so_t *self)
   } else {
     console_printf("SO: não há páginas livres para tratar o page fault, realizando swap");
     console_printf("algoritmo de substituição: %d", ALG_SUBSTITUICAO);
-    swap(self, end_causador);
+    //swap(self, end_causador);
     
   }
 }
@@ -1432,7 +1432,8 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   }
 
   // atualiza o bloco_livre para apontar para a próxima posição livre em mem_fisica
-  self->bloco_livre = end_fis;
+  self->bloco_livre = end_fis_ini + end_virt_fim +1;
+
 
   // salva para o processo o endereço físico inicial em mem_fisica (onde o programa foi colocado)
   processo->end_disco = end_fis_ini;
