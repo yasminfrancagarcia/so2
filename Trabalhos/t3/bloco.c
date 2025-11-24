@@ -11,7 +11,7 @@ bloco_t* cria_bloco(int tamanho){
             bloco[i].pid = 0; //bloco 0 reservado para o SO
         } else{
             bloco[i].ocupado = false;
-            bloco[i].pid = -1;
+            //bloco[i].pid = 0;
         }
     }
     return bloco;

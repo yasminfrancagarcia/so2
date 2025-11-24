@@ -5,7 +5,7 @@ typedef struct bloco{
     bool ocupado;
     int pid; //pid do processo que está usando este bloco
     int pg; //
-    int ciclos; //para o algoritmo LRU
+    int ciclos; //quantos ciclos a página está na memória
 } bloco_t;
 
 bloco_t* cria_bloco(int tamanho);
