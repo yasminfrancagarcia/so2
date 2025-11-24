@@ -1,17 +1,26 @@
 #include "bloco.h"
 #include <stdbool.h>
 #include <stdlib.h>
-//rastreador de memoria física, cada bloco indica se está ocupado 
-//ou livre, e quem esta ocupando
+
+// rastreador de memoria física, cada bloco indica se está ocupado 
+// ou livre, e quem esta ocupando
 bloco_t* cria_bloco(int tamanho){
-    bloco_t* bloco = (bloco_t*) malloc (tamanho * sizeof(bloco ));
+    if (tamanho <= 0) return NULL;
+    // aloca 'tamanho' structs bloco_t
+    bloco_t* bloco = malloc(tamanho * sizeof(*bloco));
+    if (bloco == NULL) return NULL;
+
     for(int i = 0; i < tamanho; i++){
-        if(i< 2){ //reservando os dois primeiros blocos para o SO
+        if(i < 2){ // reservando os dois primeiros blocos para o SO
             bloco[i].ocupado = true;
-            bloco[i].pid = 0; //bloco 0 reservado para o SO
+            bloco[i].pid = 0; // bloco reservado para o SO (pid 0)
+            bloco[i].pg = -1;
+            bloco[i].ciclos = 0;
         } else{
             bloco[i].ocupado = false;
-            //bloco[i].pid = 0;
+            bloco[i].pid = -1; // -1 indica livre
+            bloco[i].pg = -1;
+            bloco[i].ciclos = 0;
         }
     }
     return bloco;
