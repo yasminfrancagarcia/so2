@@ -11,7 +11,7 @@ bloco_t* cria_bloco(int tamanho){
     if (bloco == NULL) return NULL;
 
     for(int i = 0; i < tamanho; i++){
-        if(i < 2){ // reservando os dois primeiros blocos para o SO
+        if(i < BLOCOS_RESERVADOS){ // reservando os dois primeiros blocos para o SO
             bloco[i].ocupado = true;
             bloco[i].pid = 0; // bloco reservado para o SO (pid 0)
             bloco[i].pg = -1;
