@@ -21,7 +21,7 @@
 #include "bloco.h"
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <stdint.h>
 
 // ---------------------------------------------------------------------
 // CONSTANTES E TIPOS {{{1
@@ -30,7 +30,7 @@
 // intervalo entre interrupções do relógio
 #define INTERVALO_INTERRUPCAO 50   // em instruções executadas
 #define TERMINAIS 4
-#define FISICA_TAM 10000 // tamanho da memória física em bytes
+ // tamanho da memória física em bytes
 // Não tem processos nem memória virtual, mas é preciso usar a paginação,
 //   pelo menos para implementar relocação, já que os programas estão sendo
 //   todos montados para serem executados no endereço 0 e o endereço 0
@@ -56,7 +56,7 @@
 define NENHUM_PROCESSO -1
 #define ALGUM_PROCESSO 0 */
 #define NENHUM_PROCESSO NULL
-#define ALG_SUBSTITUICAO 0 //escolher algoritmo de substituição de páginas (0 = FIFO, 1 = LRU)
+#define ALG_SUBSTITUICAO 1//escolher algoritmo de substituição de páginas (0 = FIFO, 1 = LRU)
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -406,9 +406,6 @@ static void so_escalona(so_t *self)
 // coloca o estado do processo corrente na CPU, para que ela execute
 // O escalonador define quem vai rodar.
 // O despachante (dispatcher) coloca ele para rodar.
-
-
-
 static int so_despacha(so_t *self)
 {
   // t2: se houver processo corrente, coloca o estado desse processo onde ele
@@ -451,6 +448,7 @@ static int pag_livre(so_t *self) {
     }
     return -1; // Nenhuma página livre
 }
+
 //////////////// ALGORITIMOS DE SUBSTITUIÇÃO DE PÁGINAS /////////////////
 // FIFO: escolhe a página que está na memória há mais tempo
 static int escolhe_pagina_fifo(so_t *self) {
@@ -475,14 +473,72 @@ static int escolhe_pagina_fifo(so_t *self) {
     }
     return pagina_escolhida;
 }
-
-static int escolher_alg_subst(so_t *self) {
-    if (ALG_SUBSTITUICAO == 0) {
-        return escolhe_pagina_fifo(self);
+// LRU: escolhe a página que foi menos recentemente usada
+/*Para LRU, use uma aproximação por envelhecimento: cada página tem um número, unsigned, 
+inicializado em 0. Quando vem uma interrupção de relógio, todas as páginas do processo 
+corrente (se houver) têm esse valor alterado, dividindo ele por 2 (ou rodando à direita)
+e somando um valor correspondente ao bit mais significativo do número caso a página tenha 
+sido acessada (e zerando a informação de acesso da página). Quando precisar escolher uma 
+página para substituir, escolhe a que tem o menor número.*/
+static void so_envelhece_quadros(so_t *self)
+{
+  const uint32_t MSB = 1u << (8 * sizeof(uint32_t) - 1); // bit mais significativo
+  for (int i = 0; i < self->num_paginas_fisicas; ++i){
+    //pular quadros livres e quadros do SO
+    if (!self->blocos_memoria[i].ocupado)
+      continue;
+    if (self->blocos_memoria[i].pid <= 0)
+      continue; // pid 0 = SO, -1 = livre
+    int pg_virt = self->blocos_memoria[i].pg;
+    if (pg_virt < 0)
+      continue;
+    // achar o processo dono desse quadro
+    pcb *proc = achar_processo(self, self->blocos_memoria[i].pid);
+    if (proc == NULL || proc->tabela_paginas == NULL)
+      continue;
+    // shift right do contador
+    self->blocos_memoria[i].acesso >>= 1;
+    // se a página foi acessada (tabpag_bit_acesso), seta MSB e zera o bit
+    if (tabpag_bit_acesso(proc->tabela_paginas, pg_virt)){
+      self->blocos_memoria[i].acesso |= MSB;
+      tabpag_zera_bit_acesso(proc->tabela_paginas, pg_virt);
     }
-    // 
-    // fallback: tentar FIFO
+  }
+}
+
+static int escolhe_pagina_lru(so_t *self) {
+  uint32_t menor_val = UINT32_MAX;
+  int escolhido = -1;
+  for (int i = 0; i < self->num_paginas_fisicas; ++i){
+    if (!self->blocos_memoria[i].ocupado)
+      continue;
+    if (self->blocos_memoria[i].pid <= 0)
+      continue; // pular SO
+    if (self->blocos_memoria[i].pg < 0)
+      continue;
+    uint32_t v = self->blocos_memoria[i].acesso;
+    if (v < menor_val){
+      menor_val = v;
+      escolhido = i;
+    }
+  }
+  return escolhido;
+}
+
+//////////////////////////////// ////////////////////////////////////////
+
+static int escolher_alg_subst(so_t *self){
+  switch (ALG_SUBSTITUICAO)
+  {
+  case 0:
     return escolhe_pagina_fifo(self);
+  case 1:
+    return escolhe_pagina_lru(self);
+  default:
+    console_printf("SO: algoritmo de substituição de páginas inválido");
+    self->erro_interno = true;
+    return -1;
+  }
 }
 
 static void swap(so_t *self, int end_causador)
@@ -568,6 +624,7 @@ static void swap(so_t *self, int end_causador)
   self->blocos_memoria[pg_a_substituir].ocupado = true;
   self->blocos_memoria[pg_a_substituir].pg = inicio_pagina_virtual / TAM_PAGINA;
   self->blocos_memoria[pg_a_substituir].pid = proc_entra->pid;
+  self->blocos_memoria[pg_a_substituir].acesso = 0; // zera contador de acesso
   if (es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_a_substituir].ciclos) != ERR_OK)
   {
     console_printf("SO: erro ao ler ciclos para página alocada");
@@ -637,7 +694,7 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
   self->blocos_memoria[pg_livre].pg = end_causador / TAM_PAGINA;
-
+  self->blocos_memoria[pg_livre].acesso = 0; // zera contador de acesso
   if(es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_livre].ciclos) != ERR_OK){
     console_printf("SO: erro ao ler ciclos para página alocada");
     self->erro_interno = true;
@@ -926,6 +983,10 @@ static void so_trata_irq_relogio(so_t *self)
   err_t e1, e2;
   e1 = es_escreve(self->es, D_RELOGIO_INTERRUPCAO, 0); // desliga o sinalizador de interrupção
   e2 = es_escreve(self->es, D_RELOGIO_TIMER, INTERVALO_INTERRUPCAO);
+
+  //atualizar o acesso das paginas para LRU
+  so_envelhece_quadros(self);
+
   if (e1 != ERR_OK || e2 != ERR_OK) {
     console_printf("SO: problema da reinicialização do timer");
     self->erro_interno = true;
@@ -1224,47 +1285,7 @@ static void so_chamada_cria_proc(so_t *self)
       // t2: deveria escrever no PC do descritor do processo criado
       // self->regPC = ender_carga;
     }
-   /*  // 1. Encontrar um quadro físico livre na memória principal (RAM)
-    int quadro_livre_principal = pag_livre(self); // Sua função pag_livre busca um índice em self->blocos_memoria
-    
-    if (quadro_livre_principal == -1) {
-      console_printf("SO: Sem quadros físicos livres para o novo processo!");
-      libera_terminal(self, novo_processo->pid); // Assume que você tem uma função so_libera_terminal
-      // Aqui, você pode querer implementar SWAPPING ou simplesmente falhar a criação.
-      processo_criador->ctx_cpu.regA = -1; 
-      // Não é elegante, mas para este nível de simulação, a falha é aceitável.
-      return;
-    }
-    
-    // 2. O endereço de início no "disco" é end_disco (salvo em so_carrega_programa_na_memoria_virtual)
-    int end_disco_pg0 = novo_processo->end_disco + (ender_carga / TAM_PAGINA) * TAM_PAGINA; 
-    int end_fisico_principal = quadro_livre_principal * TAM_PAGINA;
-
-    // Copiar a primeira página (simulando a primeira carga)
-    for (int offset = 0; offset < TAM_PAGINA; offset++) {
-      int dado;
-      // Leitura do "disco" (self->mem_fisica)
-      if (mem_le(self->mem_fisica, end_disco_pg0 + offset, &dado) != ERR_OK) {
-         console_printf("SO: Erro na leitura do disco simulado ao criar processo.");
-         // ... tratamento de erro e liberação de quadro ...
-         return;
-      }
-      // Escrita na memória principal (self->mem)
-      if (mem_escreve(self->mem, end_fisico_principal + offset, dado) != ERR_OK) {
-         console_printf("SO: Erro na escrita da RAM ao criar processo.");
-         // ... tratamento de erro e liberação de quadro ...
-         return;
-      }
-    }
-    
-    // 3. Mapear na tabela de páginas
-    int pg_virt_inicial = ender_carga / TAM_PAGINA; // Geralmente 0
-    tabpag_define_quadro(novo_processo->tabela_paginas, pg_virt_inicial, quadro_livre_principal);
-    
-    // 4. Marcar o quadro físico como ocupado
-    self->blocos_memoria[quadro_livre_principal].ocupado = true;
-    self->blocos_memoria[quadro_livre_principal].pid = novo_processo->pid;
- */
+   
    // console_printf("SO: Primeira página do processo %d carregada e mapeada para QF %d.", novo_processo->pid, quadro_livre_principal);
     // marca o terminal como usado com o pid do processo que está usando
     self->terminais_usados[terminal_id] = novo_processo->pid;

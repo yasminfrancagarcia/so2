@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "cpu.h" //pegar CPU_END_FIM_PROT
 #include "mmu.h" //pegar TAM_PAGINA
-
+#include <stdint.h>
 //Queremos saber quantas blocos de memória o SO precisa reservar para si
 
 // N é a quantidade de espaços de memória que o SO reserva para si
@@ -19,7 +19,9 @@ typedef struct bloco{
     bool ocupado;
     int pid; //pid do processo que está usando este bloco
     int pg; //
-    int ciclos; //quantos ciclos a página está na memória
+    int ciclos; //guardar momento em que a página entrou na memória
+    uint32_t acesso; // para algoritmo de substituição LRU
+
 } bloco_t;
 
 bloco_t* cria_bloco(int tamanho);

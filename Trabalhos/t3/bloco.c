@@ -16,11 +16,13 @@ bloco_t* cria_bloco(int tamanho){
             bloco[i].pid = 0; // bloco reservado para o SO (pid 0)
             bloco[i].pg = -1;
             bloco[i].ciclos = 0;
+            bloco[i].acesso = 0;
         } else{
             bloco[i].ocupado = false;
             bloco[i].pid = -1; // -1 indica livre
             bloco[i].pg = -1;
             bloco[i].ciclos = 0;
+            bloco[i].acesso = 0;
         }
     }
     return bloco;
