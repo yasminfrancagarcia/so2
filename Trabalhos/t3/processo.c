@@ -25,6 +25,10 @@ pcb* criar_processo(dispositivo_id_t entrada, dispositivo_id_t saida) {
     novo_processo->quantum = QUANTUM; // Inicializa o quantum
     novo_processo->tabela_paginas = tabpag_cria(); // Cria a tabela de páginas
     novo_processo->page_faults = 0; // Inicializa o contador de page faults
+    novo_processo->swap_pendente = 0;
+    novo_processo->pending_swap_quadro = -1;
+    novo_processo->pending_swap_end_causador = -1;
+    novo_processo->desbloqueio_ate = -1;
     return novo_processo;
 }
 

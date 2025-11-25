@@ -19,7 +19,8 @@
 #include <stdio.h>
 
 // constantes
-#define MEM_TAM 500   // tamanho da memória principal
+#define MEM_TAM 800 // tamanho da memória principal
+#define MEM_SEC_TAM 10000
 
 // estrutura com os componentes do computador simulado
 typedef struct {
@@ -86,7 +87,7 @@ static void cria_hardware(hardware_t *hw)
   // cria a memória
   hw->mem = mem_cria(MEM_TAM);
   //cria memória física para simular o disco
-  hw->mem_fisica = mem_cria(MEM_TAM );
+  hw->mem_fisica = mem_cria(MEM_SEC_TAM );
   inicializa_rom(hw->mem);
   // cria a MMU
   hw->mmu = mmu_cria(hw->mem);

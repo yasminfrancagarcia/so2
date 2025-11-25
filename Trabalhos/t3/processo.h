@@ -63,6 +63,12 @@ typedef struct {
     tabpag_t* tabela_paginas; // tabela de páginas do processo
     int end_disco; // índice do bloco de memória onde está o código do processo
     int page_faults; // número de page faults do processo
+    /* em processo.h - no struct pcb */
+    // campos para swap pendente (page-fault)
+    int swap_pendente;               // 0 = nenhuma swap pendente, 1 = swap pendente
+    int pending_swap_quadro;         // quadro físico reservado para receber a página (ou -1)
+    int pending_swap_end_causador;   // endereço virtual que causou o page fault (complemento)
+    int desbloqueio_ate;             // tempo (instruções) até o qual o processo fica bloqueado por causa do swap
 } pcb;
 
 //a struct que guardará as métricas finais, é um histórico de processos finalizados
