@@ -57,9 +57,10 @@
 define NENHUM_PROCESSO -1
 #define ALGUM_PROCESSO 0 */
 #define NENHUM_PROCESSO NULL
-#define ALG_SUBSTITUICAO 1//escolher algoritmo de substituição de páginas (0 = FIFO, 1 = LRU)
+#define ALG_SUBSTITUICAO 0//escolher algoritmo de substituição de páginas (0 = FIFO, 1 = LRU)
 #define DISCO_BLOQUEIO    -2   // valor especial para proc->dispositivo_bloqueado: bloqueado por disco
 #define TEMPO_TRANSFER_PAGINA  1 // tempo de transferência em "instruções" de uma página entre memória secundária e física
+#define PID_RESERVADO -2
 struct so_t {
   cpu_t *cpu;
   mem_t *mem;
@@ -265,6 +266,38 @@ static void so_salva_estado_da_cpu(so_t *self)
 
 }
 
+static void debug_imprime_tabela_processos(so_t *self)
+{
+  console_printf("DEBUG: tabela_de_processos:");
+  for (int i = 0; i < MAX_PROCESSES; i++) {
+    pcb *p = self->tabela_de_processos[i];
+    if (p == NULL) {
+      console_printf("  [%d] NULL", i);
+      continue;
+    }
+    const char *estado_s = "(?)";
+    switch (p->estado) {
+      case P_PRONTO:      estado_s = "PRONTO";      break;
+      case P_EXECUTANDO:  estado_s = "EXECUTANDO";  break;
+      case P_BLOQUEADO:   estado_s = "BLOQUEADO";   break;
+      case P_TERMINOU:    estado_s = "TERMINOU";    break;
+      default:            estado_s = "DESCONHECIDO"; break; /* cobre P_N_ESTADOS e quaisquer valores inválidos */
+    }
+    console_printf("  [%d] pid=%d estado=%s pc=%d regA=%d disp_bloq=%d pid_esperando=%d swap_pendente=%d end_disco=%d page_faults=%d",
+                   i,
+                   p->pid,
+                   estado_s,
+                   p->ctx_cpu.pc,
+                   p->ctx_cpu.regA,
+                   p->dispositivo_bloqueado,
+                   /* use pid_esperando se existir no seu PCB, ajustar nome caso diferente */
+                   p->pid_esperando,
+                   /* swap_pendente pode não existir no seu PCB; se não existir, remova ou substitua por 0/flag adequada */
+                   (/* assumindo que exista */ p->swap_pendente ? 1 : 0),
+                   p->end_disco,
+                   p->page_faults);
+  }
+}
 
 static void so_trata_pendencias(so_t *self)
 {
@@ -287,13 +320,16 @@ static void so_trata_pendencias(so_t *self)
 
     // caso especial: bloqueio por disco (transferência de página)
     if (disp == DISCO_BLOQUEIO) {
+      console_printf("========= BLOQUEIO POR DISCO - VERIFICAR SWAP PENDENTE   %d", proc->pid);
         int agora = so_tempo_total(self);
         if (proc->swap_pendente) {
             if (agora >= proc->desbloqueio_ate) {
                 complete_pending_swap(self, proc);
+                console_printf("SO: swap completo para pid %d, desbloqueando.", proc->pid);
+          
             }
             // se swap ainda não terminou, processo permanece bloqueado; 
-            // em qualquer caso não trate via es_le() abaixo
+            
         }
         continue; // passa para o próximo processo da lista
     }
@@ -346,8 +382,8 @@ static void so_trata_pendencias(so_t *self)
       enfileira(self->fila_prontos, proc->pid); // coloca na fila de prontos
     }
   }
-
- 
+    
+  debug_imprime_tabela_processos(self);
 }
 
 
@@ -467,7 +503,7 @@ static int so_despacha(so_t *self)
 }
 
 static int pag_livre(so_t *self) {
-    for (size_t i = 0; i < self->num_paginas_fisicas; i++) {
+    for (size_t i = BLOCOS_RESERVADOS; i < self->num_paginas_fisicas; i++) {
         if (!self->blocos_memoria[i].ocupado) {
             return i;
         }
@@ -506,33 +542,39 @@ corrente (se houver) têm esse valor alterado, dividindo ele por 2 (ou rodando �
 e somando um valor correspondente ao bit mais significativo do número caso a página tenha 
 sido acessada (e zerando a informação de acesso da página). Quando precisar escolher uma 
 página para substituir, escolhe a que tem o menor número.*/
+
+//ENVELHER SO AS PAGINAS DO PROC CORRENTE 
 static void so_envelhece_quadros(so_t *self)
 {
+  if (self == NULL) return;
+  if (self->blocos_memoria == NULL) return;
+  if (self->processo_corrente == NO_PROCESS) return;
+  if (self->processo_corrente < 0 || self->processo_corrente >= MAX_PROCESSES) return;
+
+  pcb* proc = self->tabela_de_processos[self->processo_corrente];
+  if (proc == NULL) return;
+  tabpag_t *tab = proc->tabela_paginas;
+  if (tab == NULL) return;
+
   const uint32_t MSB = 1u << (8 * sizeof(uint32_t) - 1); // bit mais significativo
-  for (int i = 0; i < self->num_paginas_fisicas; ++i){
-    //pular quadros livres e quadros do SO
-    if (!self->blocos_memoria[i].ocupado)
-      continue;
-    if (self->blocos_memoria[i].pid <= 0)
-      continue; // pid 0 = SO, -1 = livre
-    int pg_virt = self->blocos_memoria[i].pg;
+  int start = BLOCOS_RESERVADOS;
+  if (start < 0) start = 0;
+  if (start >= self->num_paginas_fisicas) return;
+
+  for (int i = start; i < self->num_paginas_fisicas; ++i){
+    // pular quadros livres e quadros do SO / reservados
+    if (!self->blocos_memoria[i].ocupado) continue;
     int pid = self->blocos_memoria[i].pid;
-    if (pg_virt < 0)
-      continue;
-    // achar o processo dono desse quadro
-    pcb *proc = achar_processo(self, self->blocos_memoria[i].pid);
-    if (proc == NULL || proc->tabela_paginas == NULL)
-      continue;
+    if (pid != proc->pid) continue; // só envelhece quadros do processo corrente
+
+    int pg_virt = self->blocos_memoria[i].pg;
+    if (pg_virt < 0) continue;
     // shift right do contador
     self->blocos_memoria[i].acesso >>= 1;
     // se a página foi acessada (tabpag_bit_acesso), seta MSB e zera o bit
-    if (tabpag_bit_acesso(proc->tabela_paginas, pg_virt)){
+    if (tabpag_bit_acesso(tab, pg_virt)){
       self->blocos_memoria[i].acesso |= MSB;
-      tabpag_zera_bit_acesso(proc->tabela_paginas, pg_virt);
-      // atualiza a MMU se necessário (para garantir que o bit A resetado seja visto)
-      if (self->processo_corrente == pid) {
-          mmu_define_tabpag(self->mmu, proc->tabela_paginas);
-      }
+      tabpag_zera_bit_acesso(tab, pg_virt);
     }
   }
 }
@@ -540,7 +582,7 @@ static void so_envelhece_quadros(so_t *self)
 static int escolhe_pagina_lru(so_t *self) {
   uint32_t menor_val = UINT32_MAX;
   int escolhido = -1;
-  for (int i = 0; i < self->num_paginas_fisicas; ++i){
+  for (int i = BLOCOS_RESERVADOS; i < self->num_paginas_fisicas; ++i){
     if (!self->blocos_memoria[i].ocupado)
       continue;
     if (self->blocos_memoria[i].pid <= 0)
@@ -591,7 +633,7 @@ static void schedule_page_transfer(so_t *self, pcb *proc, int end_causador, int 
     {
       pg_dest = escolher_alg_subst(self);
 
-      /* Depois de decidir pg_dest, acrescente validação e tentativas de correção */
+    
     if (pg_dest < 0 || pg_dest >= self->num_paginas_fisicas) {
         console_printf("SO: schedule_page_transfer recebeu pg_dest inválido %d (num=%d). Tentando alocar outro.", pg_dest, self->num_paginas_fisicas);
         pg_dest = pag_livre(self);
@@ -612,6 +654,9 @@ static void schedule_page_transfer(so_t *self, pcb *proc, int end_causador, int 
 
   /* reserva o quadro para evitar racing (marca ocupado provisoriamente) */
   self->blocos_memoria[pg_dest].ocupado = true;
+  /* self->blocos_memoria[pg_dest].pid = PID_RESERVADO;
+  self->blocos_memoria[pg_dest].pg = -1; */
+  self->blocos_memoria[pg_dest].acesso = 0;
   /* não alteramos pid/pg ainda; isso será feito no complete_pending_swap */
 
   /* grava informações no PCB */
@@ -725,6 +770,7 @@ static void complete_pending_swap(so_t *self, pcb *proc)
   tabpag_define_quadro(proc->tabela_paginas, inicio_pagina_virtual / TAM_PAGINA, quadro);
   mmu_define_tabpag(self->mmu, proc->tabela_paginas);
 
+
   /* limpa flags do PCB */
   proc->swap_pendente = 0;
   proc->pending_swap_quadro = -1;
@@ -739,8 +785,7 @@ static void complete_pending_swap(so_t *self, pcb *proc)
   /* desbloqueia / torna pronto */
   so_muda_estado(self, proc, P_PRONTO);
   enfileira(self->fila_prontos, proc->pid);
-
-  console_printf("SO: transferência completada; PID %d desbloqueado (Q %d)", proc->pid, quadro);
+  console_printf("SO: transferência completada,  PID %d desbloqueado (Q %d)", proc->pid, quadro);
 }
 
 static void so_trata_page_fault(so_t *self)
@@ -946,6 +991,7 @@ static void so_trata_irq_err_cpu(so_t *self)
     else if (erro == ERR_INSTR_INV)
     {
       /* DEBUG: imprimir dump físico aonde o PC pontua para ver o que CPU "vê" */
+      console_printf("INSTRUCÃO INVÁLIDA executada pelo processo %d", proc->pid);
       int pc = proc->ctx_cpu.pc;
       int pagina = pc / TAM_PAGINA;
       int desloc = pc % TAM_PAGINA;
@@ -971,7 +1017,7 @@ static void so_trata_irq_err_cpu(so_t *self)
       {
         console_printf("SO-DBG: não há quadro mapeado para a página do PC");
       }
-      console_printf("INSTRUCÃO INVÁLIDA executada pelo processo %d", proc->pid);
+      
       /* Para evitar flood de mensagens durante a depuração, encerraremos o processo.
          Remova ou ajuste isso quando confirmar/fixar a causa. */
       so_acorda_processos_esperando(self, proc->pid);
@@ -1326,6 +1372,9 @@ static void so_chamada_cria_proc(so_t *self)
     processo_criador->ctx_cpu.regA = novo_processo->pid;
     // inserir na fila de processos prontos
     enfileira(self->fila_prontos, novo_processo->pid);
+
+    debug_imprime_tabela_processos(self);
+
     self->metricas->num_proc_criados++;
 
     return;
@@ -1358,9 +1407,9 @@ static void so_chamada_mata_proc(so_t *self)
     proc_corrente->ctx_cpu.regA = -1; // erro: pid não encontrado
     return;
   }
-
+  console_printf("SO-DBG: so_chamada_mata_proc: matando PID %d (idx %d). Chamando so_acorda_processos_esperando...", proc_alvo->pid, /* índice se tiver */ self->processo_corrente);
   so_acorda_processos_esperando(self, proc_alvo->pid);
-
+  //console_printf("SO-DBG: pid_morto=%d; acordando quem aguardava...", proc_alvo->pid);
   //proc_alvo->estado = P_TERMINOU;
   so_muda_estado(self, proc_alvo, P_TERMINOU); // usa a função que contabiliza métricas
   proc_alvo->usando = 0;

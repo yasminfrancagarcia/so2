@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 // constantes
-#define MEM_TAM 800 // tamanho da memória principal
+#define MEM_TAM 800// tamanho da memória principal
 #define MEM_SEC_TAM 10000
 
 // estrutura com os componentes do computador simulado

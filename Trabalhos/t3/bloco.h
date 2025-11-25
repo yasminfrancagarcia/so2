@@ -14,7 +14,8 @@
 // TAM_PAGINA é o tamanho de cada página
 
 
-#define BLOCOS_RESERVADOS ((CPU_END_FIM_PROT +1) / TAM_PAGINA )//número de blocos reservados para o SO
+#define BLOCOS_RESERVADOS ((CPU_END_FIM_PROT +1) / TAM_PAGINA )
+//#define BLOCOS_RESERVADOS ((CPU_END_FIM_PROT +1) / TAM_PAGINA )//número de blocos reservados para o SO
 typedef struct bloco{
     bool ocupado;
     int pid; //pid do processo que está usando este bloco
