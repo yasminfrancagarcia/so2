@@ -490,6 +490,7 @@ static void so_envelhece_quadros(so_t *self)
     if (self->blocos_memoria[i].pid <= 0)
       continue; // pid 0 = SO, -1 = livre
     int pg_virt = self->blocos_memoria[i].pg;
+    int pid = self->blocos_memoria[i].pid;
     if (pg_virt < 0)
       continue;
     // achar o processo dono desse quadro
@@ -502,6 +503,10 @@ static void so_envelhece_quadros(so_t *self)
     if (tabpag_bit_acesso(proc->tabela_paginas, pg_virt)){
       self->blocos_memoria[i].acesso |= MSB;
       tabpag_zera_bit_acesso(proc->tabela_paginas, pg_virt);
+      // atualiza a MMU se necessário (para garantir que o bit A resetado seja visto)
+      if (self->processo_corrente == pid) {
+          mmu_define_tabpag(self->mmu, proc->tabela_paginas);
+      }
     }
   }
 }
@@ -621,10 +626,12 @@ static void swap(so_t *self, int end_causador)
   }
 
   /* atualiza controle de blocos */
+  //carrega informações do processo que entrou
   self->blocos_memoria[pg_a_substituir].ocupado = true;
   self->blocos_memoria[pg_a_substituir].pg = inicio_pagina_virtual / TAM_PAGINA;
   self->blocos_memoria[pg_a_substituir].pid = proc_entra->pid;
-  self->blocos_memoria[pg_a_substituir].acesso = 0; // zera contador de acesso
+
+  self->blocos_memoria[pg_a_substituir].acesso = (1 << 31); //carregar com o msb 
   if (es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_a_substituir].ciclos) != ERR_OK)
   {
     console_printf("SO: erro ao ler ciclos para página alocada");
@@ -694,7 +701,7 @@ static void page_fault_tratavel(so_t *self, int end_causador)
   self->blocos_memoria[pg_livre].ocupado = true;
   self->blocos_memoria[pg_livre].pid = proc_corrente->pid;
   self->blocos_memoria[pg_livre].pg = end_causador / TAM_PAGINA;
-  self->blocos_memoria[pg_livre].acesso = 0; // zera contador de acesso
+  self->blocos_memoria[pg_livre].acesso = (1 << 31); //carregar com o msb 
   if(es_le(self->es, D_RELOGIO_INSTRUCOES, &self->blocos_memoria[pg_livre].ciclos) != ERR_OK){
     console_printf("SO: erro ao ler ciclos para página alocada");
     self->erro_interno = true;
@@ -726,7 +733,9 @@ static void page_fault_tratavel(so_t *self, int end_causador)
 
 static void so_trata_page_fault(so_t *self)
 {
+  
   pcb *proc_corrente = self->tabela_de_processos[self->processo_corrente];
+  proc_corrente->page_faults++;
   int end_causador = proc_corrente->ctx_cpu.complemento;
   int pagina_virtual = end_causador / TAM_PAGINA;
   tabpag_t *tabela = proc_corrente->tabela_paginas;

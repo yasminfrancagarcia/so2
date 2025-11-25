@@ -62,6 +62,7 @@ typedef struct {
     int num_respostas_pos_bloqueio; // N. de vezes que foi de BLOQUEADO -> PRONTO 
     tabpag_t* tabela_paginas; // tabela de páginas do processo
     int end_disco; // índice do bloco de memória onde está o código do processo
+    int page_faults; // número de page faults do processo
 } pcb;
 
 //a struct que guardará as métricas finais, é um histórico de processos finalizados
@@ -85,6 +86,8 @@ typedef struct {
     //métrica 10
     int tempo_total_resposta_pos_bloqueio;
     int num_respostas_pos_bloqueio;
+    //
+    int total_page_faults; // número total de page faults do processo
 } metricas_processo_final_t;
 
 pcb* criar_processo( dispositivo_id_t entrada, dispositivo_id_t saida);

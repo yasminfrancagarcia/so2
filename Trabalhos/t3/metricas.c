@@ -177,7 +177,7 @@ void so_salva_metricas_finais(struct so_t *self, pcb *proc)
   hist->num_preempcoes_proc = proc->num_preempcoes_proc;
   hist->tempo_total_resposta_pos_bloqueio = proc->tempo_total_resposta_pos_bloqueio;
   hist->num_respostas_pos_bloqueio = proc->num_respostas_pos_bloqueio;
-
+  hist->total_page_faults = proc->page_faults;
   for (int i = 0; i < P_N_ESTADOS; i++)
   {
     hist->contagem_estados[i] = proc->contagem_estados[i];
@@ -325,5 +325,7 @@ void imprimir_dados(struct so_t *self)
     {
       console_printf("10. Tempo médio de resposta (pós-bloqueio): N/A (nunca foi desbloqueado)");
     }
+
+    console_printf("11. Número total de page faults: %d", p->total_page_faults);
   }
 }
