@@ -179,7 +179,17 @@ int so_get_intervalo_interrupcao(so_t *self) {
   return INTERVALO_INTERRUPCAO;
 }
 
+int so_get_algoritmo_substituicao(so_t *self) {
+  return ALG_SUBSTITUICAO;
+}
 
+int so_get_tamanho_memoria_fisica(so_t *self) {
+  return mem_tam(self->mem);
+}
+
+int so_get_tamanho_pg(so_t *self) {
+  return TAM_PAGINA;
+}
 // ---------------------------------------------------------------------
 // TRATAMENTO DE INTERRUPÇÃO {{{1
 // ---------------------------------------------------------------------
@@ -215,7 +225,7 @@ static int so_trata_interrupcao(void *argC, int reg_A)
   irq_t irq = reg_A;
   // ATUALIZAÇÃO DE TEMPOS (Métricas 3 e 9)
   //console_printf("SO: Atualizando tempos antes de tratar IRQ %d", irq);
-  //so_atualiza_tempos(self); 
+  so_atualiza_tempos(self); 
   // esse print polui bastante, recomendo tirar quando estiver com mais confiança
   //console_printf("SO: recebi IRQ %d (%s)", irq, irq_nome(irq));
   // métrica 4: Contagem de Interrupções (feita em so_trata_irq
@@ -569,12 +579,14 @@ static void so_envelhece_quadros(so_t *self)
 
     int pg_virt = self->blocos_memoria[i].pg;
     if (pg_virt < 0) continue;
+    uint32_t antes = self->blocos_memoria[i].acesso;
     // shift right do contador
     self->blocos_memoria[i].acesso >>= 1;
     // se a página foi acessada (tabpag_bit_acesso), seta MSB e zera o bit
     if (tabpag_bit_acesso(tab, pg_virt)){
       self->blocos_memoria[i].acesso |= MSB;
       tabpag_zera_bit_acesso(tab, pg_virt);
+       console_printf("ENVELHECE: Q=%d pid=%d pg=%d acesso antes=0x%08x depois=0x%08x bit_acesso=%d", i, pid, pg_virt, antes, self->blocos_memoria[i].acesso);
     }
   }
 }
@@ -593,7 +605,9 @@ static int escolhe_pagina_lru(so_t *self) {
     if (v < menor_val){
       menor_val = v;
       escolhido = i;
+      console_printf("LRU: candidato Q=%d pid=%d pg=%d acesso=0x%08x ciclos=%d", i, self->blocos_memoria[i].pid, self->blocos_memoria[i].pg, self->blocos_memoria[i].acesso, self->blocos_memoria[i].ciclos);
     }
+    console_printf("LRU: escolhido Q=%d pid=%d pg=%d acesso=0x%08x", escolhido, self->blocos_memoria[escolhido].pid, self->blocos_memoria[escolhido].pg, self->blocos_memoria[escolhido].acesso);
   }
   return escolhido;
 }
@@ -654,10 +668,6 @@ static void schedule_page_transfer(so_t *self, pcb *proc, int end_causador, int 
 
   /* reserva o quadro para evitar racing (marca ocupado provisoriamente) */
   self->blocos_memoria[pg_dest].ocupado = true;
-  /* self->blocos_memoria[pg_dest].pid = PID_RESERVADO;
-  self->blocos_memoria[pg_dest].pg = -1; */
-  self->blocos_memoria[pg_dest].acesso = 0;
-  /* não alteramos pid/pg ainda; isso será feito no complete_pending_swap */
 
   /* grava informações no PCB */
   proc->swap_pendente = 1;
@@ -676,9 +686,10 @@ static void schedule_page_transfer(so_t *self, pcb *proc, int end_causador, int 
                  proc->pid, end_causador, pg_dest, fim_transfer);
 }
 
+/* substitua a implementação existente de complete_pending_swap por esta */
 static void complete_pending_swap(so_t *self, pcb *proc)
 {
-  if (!proc->swap_pendente)return;
+  if (!proc->swap_pendente) return;
 
   int end_causador = proc->pending_swap_end_causador;
   int inicio_pagina_virtual = end_causador - (end_causador % TAM_PAGINA);
@@ -712,8 +723,9 @@ static void complete_pending_swap(so_t *self, pcb *proc)
     return;
   }
 
+  /* Trata sempre o conteúdo anterior do quadro, mesmo que pertença ao mesmo PID */
   int pid_do_bloco = self->blocos_memoria[quadro].pid;
-  if (pid_do_bloco > 0 && pid_do_bloco != proc->pid)
+  if (pid_do_bloco > 0)
   {
     pcb *proc_sai = achar_processo(self, pid_do_bloco);
     int pg_virt_sai = self->blocos_memoria[quadro].pg;
@@ -721,25 +733,38 @@ static void complete_pending_swap(so_t *self, pcb *proc)
     {
       tabpag_t *tab_pag_sai = proc_sai->tabela_paginas;
       int end_disco_sai = proc_sai->end_disco + (pg_virt_sai * TAM_PAGINA);
+      /* se página foi alterada, grava no disco */
       if (tabpag_bit_alteracao(tab_pag_sai, pg_virt_sai))
       {
         console_printf("SO: swap-out: escrevendo pag %d PID %d para disco (Q %d)", pg_virt_sai, proc_sai->pid, quadro);
         for (int off = 0; off < TAM_PAGINA; off++)
         {
           int val;
-          mem_le(self->mem, quadro * TAM_PAGINA + off, &val);
-          mem_escreve(self->mem_sec, end_disco_sai + off, val);
+          if (mem_le(self->mem, quadro * TAM_PAGINA + off, &val) != ERR_OK)
+          {
+            console_printf("SO: erro lendo mem principal em addr %d durante swap-out", quadro * TAM_PAGINA + off);
+            self->erro_interno = true;
+            return;
+          }
+          if (mem_escreve(self->mem_sec, end_disco_sai + off, val) != ERR_OK)
+          {
+            console_printf("SO: erro escrevendo mem_sec em addr %d durante swap-out", end_disco_sai + off);
+            self->erro_interno = true;
+            return;
+          }
         }
       }
+      /* invalidar a entrada antiga da tabela do processo que estava no quadro */
       tabpag_invalida_pagina(tab_pag_sai, pg_virt_sai);
     }
     else
     {
-      console_printf("SO: swap-out aviso: PID do bloco %d não encontrado", pid_do_bloco);
+      /* se não achar o processo dono, avisar (mas continuar com o swap-in) */
+      console_printf("SO: swap-out aviso: PID do bloco %d não encontrado ou pg inválida", pid_do_bloco);
     }
   }
 
-  /* copia da mem_sec para mem principal */
+  /* copia da mem_sec para mem principal (swap-in) */
   for (int off = 0; off < TAM_PAGINA; off++)
   {
     int val;
@@ -769,7 +794,6 @@ static void complete_pending_swap(so_t *self, pcb *proc)
 
   tabpag_define_quadro(proc->tabela_paginas, inicio_pagina_virtual / TAM_PAGINA, quadro);
   mmu_define_tabpag(self->mmu, proc->tabela_paginas);
-
 
   /* limpa flags do PCB */
   proc->swap_pendente = 0;
@@ -1412,6 +1436,16 @@ static void so_chamada_mata_proc(so_t *self)
   //console_printf("SO-DBG: pid_morto=%d; acordando quem aguardava...", proc_alvo->pid);
   //proc_alvo->estado = P_TERMINOU;
   so_muda_estado(self, proc_alvo, P_TERMINOU); // usa a função que contabiliza métricas
+
+  //zerar os recursos de memoria do proc morto 
+  for(int i=BLOCOS_RESERVADOS; i< self->num_paginas_fisicas; i++){
+    if(self->blocos_memoria[i].pid == proc_alvo->pid){
+      self->blocos_memoria[i].pid = 0;
+      self->blocos_memoria[i].ocupado = false;
+      self->blocos_memoria[i].acesso = 0;
+    }
+  }
+  
   proc_alvo->usando = 0;
   libera_terminal(self, proc_alvo->pid);
   //desenfileira(self->fila_prontos, proc_alvo->pid);
@@ -1561,21 +1595,6 @@ static int so_carrega_programa_na_memoria_virtual(so_t *self,
   //   colocadas na memória principal por demanda. Para simplificar ainda mais, a
   //   memória secundária pode ser alocada da forma como a principal está sendo
   //   alocada aqui (sem reuso)
-  //int end_virt_ini = prog_end_carga(programa);
-  // o código abaixo só funciona se o programa iniciar no início de uma página
-  /* if ((end_virt_ini % TAM_PAGINA) != 0) return -1;
-  int end_virt_fim = end_virt_ini + prog_tamanho(programa) - 1;
-  int pagina_ini = end_virt_ini / TAM_PAGINA;
-  int pagina_fim = end_virt_fim / TAM_PAGINA;
-  int n_paginas = pagina_fim - pagina_ini + 1;
-  int quadro_ini = self->quadro_livre;
-  int quadro_fim = quadro_ini + n_paginas - 1;
-  // mapeia as páginas nos quadros
-  for (int i = 0; i < n_paginas; i++) {
-    tabpag_define_quadro(self->tabpag_global, pagina_ini + i, quadro_ini + i);
-  }
-  self->quadro_livre = quadro_fim + 1; */
-
   // carrega o programa na memória secundaria
   
   int end_fis_ini = self->bloco_livre;//onde o conteúdo está guardado no disco

@@ -72,27 +72,33 @@ void so_muda_estado(struct so_t *self, pcb *proc, estado_processo novo_estado)
     return;
 
   int tempo_atual = so_tempo_total(self);
+
+  /* guarda estado anterior para decisões (desbloqueio detectado se era P_BLOQUEADO) */
+  estado_processo estado_anterior = proc->estado;
+
   // contabiliza tempo gasto no estado anterior
   int delta_t = tempo_atual - proc->tempo_ultima_mudanca_estado;
   proc->tempo_em_estado[proc->estado] += delta_t; // metríca 9
+
   // atualiza para o novo estado
   proc->estado = novo_estado;
   proc->contagem_estados[novo_estado]++; // metríca 8
   proc->tempo_ultima_mudanca_estado = tempo_atual;
 
-  //lógica específica para Métrica 10 (tempo de Resposta)
-  if (novo_estado == P_PRONTO && (proc->dispositivo_bloqueado != -1 || proc->pid_esperando != -1))
+  // --- Métrica 10: tempo de resposta pós-bloqueio ---
+  // se veio de BLOQUEADO para PRONTO, registra momento do desbloqueio
+  if (novo_estado == P_PRONTO && estado_anterior == P_BLOQUEADO)
   {
-    //acabou de ser desbloqueado (vinha de P_BLOQUEADO)
     proc->tempo_desbloqueou = tempo_atual;
-    proc->num_respostas_pos_bloqueio++;
+    /* NÃO incrementar o contador aqui: vamos contar apenas quando realmente for escalonado */
   }
+  // se agora está EXECUTANDO e havia sido desbloqueado antes, conta resposta
   else if (novo_estado == P_EXECUTANDO && proc->tempo_desbloqueou != -1)
   {
-    //foi escalonado após um desbloqueio
-    int tempo_espera = tempo_atual - proc->tempo_desbloqueou; //tempo de espera entre desbloqueio e escalonamento
+    int tempo_espera = tempo_atual - proc->tempo_desbloqueou; // tempo entre desbloqueio e escalonamento
     proc->tempo_total_resposta_pos_bloqueio += tempo_espera;
-    proc->tempo_desbloqueou = -1; // Reseta flag
+    proc->num_respostas_pos_bloqueio++; // conta o evento agora
+    proc->tempo_desbloqueou = -1; // limpa flag
   }
 }
 
@@ -226,6 +232,15 @@ void imprimir_dados(struct so_t *self)
   console_printf(" - Política de Escalonamento: round robin");
   console_printf(" - Quantum: %d", QUANTUM);
   console_printf(" - Numero de interrupções: %d", so_get_intervalo_interrupcao(self));
+  int a = so_get_algoritmo_substituicao(self);
+  if(a==0){
+    console_printf(" - Algoritmo de substituição de páginas: FIFO");
+  }else{
+    console_printf(" - Algoritmo de substituição de páginas: LRU");
+  }
+  
+  console_printf(" - Tamanho da memória física: %d quadros", so_get_tamanho_memoria_fisica(self));
+  console_printf(" - Tamanho da página: %d ", so_get_tamanho_pg(self));
   console_printf("\nMÉTRICAS GLOBAIS DO SISTEMA ");
 
   // Métrica 1: Número de processos criados
